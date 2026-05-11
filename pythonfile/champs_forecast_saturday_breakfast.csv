@@ -1,0 +1,7 @@
+event_type,event_date,predicted_attendance,lower_bound,upper_bound,recommendation
+Saturday Breakfast,2025-01-04,121,102,141,"GOOD — Full setup. Food for ~130, full AV, confirm venue."
+Saturday Breakfast,2025-01-11,124,95,152,"GOOD — Full setup. Food for ~130, full AV, confirm venue."
+Saturday Breakfast,2025-01-18,123,94,153,"GOOD — Full setup. Food for ~130, full AV, confirm venue."
+Saturday Breakfast,2025-01-25,124,93,155,"GOOD — Full setup. Food for ~130, full AV, confirm venue."
+Saturday Breakfast,2025-02-01,124,92,156,"GOOD — Full setup. Food for ~130, full AV, confirm venue."
+Saturday Breakfast,2025-02-08,124,92,157,"GOOD — Full setup. Food for ~130, full AV, confirm venue."

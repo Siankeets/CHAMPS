@@ -1,0 +1,13 @@
+event_date,event_type,predicted_attendance,lower_bound,upper_bound,recommendation
+2025-01-04,Saturday Breakfast,127,122,131,"GOOD — Full setup. Food for ~110, full AV, confirm venue."
+2025-01-05,Sunday Mass,126,120,133,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-01-11,Saturday Breakfast,128,119,136,"GOOD — Full setup. Food for ~110, full AV, confirm venue."
+2025-01-12,Sunday Mass,127,116,138,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-01-18,Saturday Breakfast,127,115,139,"GOOD — Full setup. Food for ~110, full AV, confirm venue."
+2025-01-19,Sunday Mass,127,114,141,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-01-25,Saturday Breakfast,127,112,142,"GOOD — Full setup. Food for ~110, full AV, confirm venue."
+2025-01-26,Sunday Mass,127,111,144,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-02-01,Saturday Breakfast,127,110,145,"GOOD — Full setup. Food for ~110, full AV, confirm venue."
+2025-02-02,Sunday Mass,127,108,146,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-02-08,Saturday Breakfast,127,108,147,"GOOD — Full setup. Food for ~110, full AV, confirm venue."
+2025-02-09,Sunday Mass,127,106,148,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."

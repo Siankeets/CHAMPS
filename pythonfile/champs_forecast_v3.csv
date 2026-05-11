@@ -1,0 +1,13 @@
+event_date,event_type,predicted_attendance,lower_bound,upper_bound,recommendation
+2025-01-04,Saturday Breakfast,134,111,157,"HIGH — Scale up. Extra food, seating, and volunteers needed."
+2025-01-05,Sunday Mass,135,94,175,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-01-11,Saturday Breakfast,131,88,174,"HIGH — Scale up. Extra food, seating, and volunteers needed."
+2025-01-12,Sunday Mass,130,87,173,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-01-18,Saturday Breakfast,131,87,174,"HIGH — Scale up. Extra food, seating, and volunteers needed."
+2025-01-19,Sunday Mass,131,86,175,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-01-25,Saturday Breakfast,131,86,176,"HIGH — Scale up. Extra food, seating, and volunteers needed."
+2025-01-26,Sunday Mass,131,85,176,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-02-01,Saturday Breakfast,131,85,177,"HIGH — Scale up. Extra food, seating, and volunteers needed."
+2025-02-02,Sunday Mass,131,84,177,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
+2025-02-08,Saturday Breakfast,131,83,178,"HIGH — Scale up. Extra food, seating, and volunteers needed."
+2025-02-09,Sunday Mass,131,83,178,"GOOD — Full setup. Food for ~140, full AV, confirm venue layout."
