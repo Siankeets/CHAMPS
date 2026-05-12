@@ -4,14 +4,14 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Create Event</h1>
-        <p class="page-subtitle">Fill in the details below to add a new event.</p>
+        <h1 class="page-title">Edit Event</h1>
+        <p class="page-subtitle">Updating: {{ event.event_name }}</p>
     </div>
-    <a href="/events" class="btn-champs btn-secondary-champs">← Back to Events</a>
+    <a href="/events/{{ event.event_id }}" class="btn-champs btn-secondary-champs">← Back to Details</a>
 </div>
 
 <div class="form-card">
-    <form method="POST" id="eventForm" novalidate>
+    <form method="POST" id="editForm" novalidate>
 
         <p class="form-section-title">Basic Information</p>
 
@@ -25,7 +25,7 @@
                 name="event_name"
                 class="champs-input"
                 placeholder="e.g. Community Outreach Drive"
-                value="{{ form_data.event_name if form_data else '' }}"
+                value="{{ event.event_name }}"
                 required
                 maxlength="255">
             <div class="field-error" id="err_event_name"></div>
@@ -37,22 +37,10 @@
                     Event Type <span class="required-star">*</span>
                 </label>
                 <select id="event_type" name="event_type" class="champs-select" required>
-                    <option value="" disabled {% if not form_data or not form_data.event_type %}selected{% endif %}>Select a type…</option>
-                    <option value="Friday Action Group Leader" {% if form_data and form_data.event_type == 'Friday Action Group Leader' %}selected{% endif %}>
-                        Friday Action Group Leader
-                    </option>
-                    <option value="Saturday Breakfast" {% if form_data and form_data.event_type == 'Saturday Breakfast' %}selected{% endif %}>
-                        Saturday Breakfast
-                    </option>
-                    <option value="Community Outreach" {% if form_data and form_data.event_type == 'Community Outreach' %}selected{% endif %}>
-                        Community Outreach
-                    </option>
-                    <option value="Training & Development" {% if form_data and form_data.event_type == 'Training & Development' %}selected{% endif %}>
-                        Training & Development
-                    </option>
-                    <option value="Other" {% if form_data and form_data.event_type == 'Other' %}selected{% endif %}>
-                        Other
-                    </option>
+                    <option value="" disabled>Select a type…</option>
+                    {% for et in ['Friday Action Group Leader', 'Saturday Breakfast', 'Community Outreach', 'Training & Development', 'Other'] %}
+                        <option value="{{ et }}" {% if event.event_type == et %}selected{% endif %}>{{ et }}</option>
+                    {% endfor %}
                 </select>
                 <div class="field-error" id="err_event_type"></div>
             </div>
@@ -62,11 +50,10 @@
                     Status <span class="required-star">*</span>
                 </label>
                 <select id="status" name="status" class="champs-select" required>
-                    <option value="" disabled {% if not form_data or not form_data.status %}selected{% endif %}>Select status…</option>
-                    <option value="Upcoming" {% if form_data and form_data.status == 'Upcoming' %}selected{% endif %}>Upcoming</option>
-                    <option value="Ongoing"  {% if form_data and form_data.status == 'Ongoing'  %}selected{% endif %}>Ongoing</option>
-                    <option value="Finished" {% if form_data and form_data.status == 'Finished' %}selected{% endif %}>Finished</option>
-                    <option value="Cancelled" {% if form_data and form_data.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    <option value="" disabled>Select status…</option>
+                    {% for s in ['Upcoming', 'Ongoing', 'Finished', 'Cancelled'] %}
+                        <option value="{{ s }}" {% if event.status == s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
                 </select>
                 <div class="field-error" id="err_status"></div>
             </div>
@@ -79,7 +66,7 @@
                 name="description"
                 class="champs-textarea"
                 placeholder="Brief description of the event…"
-                maxlength="2000">{{ form_data.description if form_data else '' }}</textarea>
+                maxlength="2000">{{ event.description or '' }}</textarea>
         </div>
 
         <p class="form-section-title">Schedule & Location</p>
@@ -94,7 +81,7 @@
                     id="event_date"
                     name="event_date"
                     class="champs-input"
-                    value="{{ form_data.event_date if form_data else '' }}"
+                    value="{{ event.event_date | safe_date('%Y-%m-%d') if event.event_date else '' }}"
                     required>
                 <div class="field-error" id="err_event_date"></div>
             </div>
@@ -107,7 +94,7 @@
                     name="location"
                     class="champs-input"
                     placeholder="e.g. Barangay Hall, Naic"
-                    value="{{ form_data.location if form_data else '' }}"
+                    value="{{ event.location or '' }}"
                     maxlength="255">
             </div>
         </div>
@@ -122,7 +109,7 @@
                     id="start_time"
                     name="start_time"
                     class="champs-input"
-                    value="{{ form_data.start_time if form_data else '' }}"
+                    value="{{ event.start_time | to_hhmm }}"
                     required>
                 <div class="field-error" id="err_start_time"></div>
             </div>
@@ -136,7 +123,7 @@
                     id="end_time"
                     name="end_time"
                     class="champs-input"
-                    value="{{ form_data.end_time if form_data else '' }}"
+                    value="{{ event.end_time | to_hhmm }}"
                     required>
                 <div class="field-error" id="err_end_time"></div>
             </div>
@@ -154,16 +141,15 @@
                 placeholder="0"
                 min="1"
                 max="100000"
-                value="{{ form_data.expected_attendance if form_data else '' }}">
-            <div class="field-hint">Leave blank if not yet determined.</div>
+                value="{{ event.expected_attendance or '' }}">
             <div class="field-error" id="err_expected_attendance"></div>
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn-champs btn-primary-champs">
-                Create Event
+                Save Changes
             </button>
-            <a href="/events" class="btn-champs btn-secondary-champs">Cancel</a>
+            <a href="/events/{{ event.event_id }}" class="btn-champs btn-secondary-champs">Cancel</a>
         </div>
 
     </form>
@@ -171,7 +157,7 @@
 
 <script>
 (function () {
-    const form = document.getElementById('eventForm');
+    const form = document.getElementById('editForm');
 
     const rules = {
         event_name:  { required: true, label: 'Event name' },
@@ -196,7 +182,6 @@
             const el = document.getElementById(name);
             if (!el) continue;
             const val = el.value.trim();
-
             if (rule.required && !val) {
                 showErr(name, rule.label + ' is required.');
                 valid = false;
@@ -205,7 +190,6 @@
             }
         }
 
-        // end_time must be after start_time
         const start = document.getElementById('start_time').value;
         const end   = document.getElementById('end_time').value;
         if (start && end && end <= start) {
@@ -213,7 +197,6 @@
             valid = false;
         }
 
-        // attendance must be positive
         const att = document.getElementById('expected_attendance').value;
         if (att && parseInt(att) < 1) {
             showErr('expected_attendance', 'Attendance must be at least 1.');

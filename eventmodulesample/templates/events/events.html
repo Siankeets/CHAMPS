@@ -2,57 +2,117 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-
-    <h2>Events</h2>
-
-    <a href="/create_event" class="btn btn-primary">
-        Create Event
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Events</h1>
+        <p class="page-subtitle">{{ events|length }} event{{ 's' if events|length != 1 else '' }} total</p>
+    </div>
+    <a href="/create_event" class="btn-champs btn-primary-champs">
+        + New Event
     </a>
-
 </div>
 
-<table class="table table-bordered">
+<div class="table-card">
 
-    <thead>
+    {% if events %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Event Name</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Attendance</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td class="event-id-cell">{{ event.event_id }}</td>
 
-        <tr>
+                <td class="event-name-cell">{{ event.event_name }}</td>
 
-            <th>ID</th>
-            <th>Event Name</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th>Location</th>
-            <th>Status</th>
+                <td>{{ event.event_type }}</td>
 
-        </tr>
+                <td>{{ event.event_date | safe_date }}</td>
 
-    </thead>
+                <td>{{ event.location or '—' }}</td>
 
-    <tbody>
+                <td>{{ event.expected_attendance or '—' }}</td>
 
-        {% for event in events %}
+                <td>
+                    {% set s = event.status | lower if event.status else '' %}
+                    <span class="status-badge status-{{ s }}">
+                        {{ event.status or 'Unknown' }}
+                    </span>
+                </td>
 
-        <tr>
+                <td>
+                    <div class="actions-cell">
+                        <a href="/events/{{ event.event_id }}"
+                           class="btn-champs btn-secondary-champs btn-sm-champs"
+                           title="View details">
+                            View
+                        </a>
+                        <a href="/events/{{ event.event_id }}/edit"
+                           class="btn-champs btn-edit-champs btn-sm-champs"
+                           title="Edit event">
+                            Edit
+                        </a>
+                        <button type="button"
+                                class="btn-champs btn-danger-champs btn-sm-champs"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal{{ event.event_id }}"
+                                title="Delete event">
+                            Delete
+                        </button>
+                    </div>
 
-            <td>{{ event.event_id }}</td>
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal{{ event.event_id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete Event</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete <strong>{{ event.event_name }}</strong>?
+                                    This action cannot be undone.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn-champs btn-secondary-champs" data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+                                    <form action="/events/{{ event.event_id }}/delete" method="POST" style="margin:0;">
+                                        <button type="submit" class="btn-champs btn-danger-champs">
+                                            Yes, Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-            <td>{{ event.event_name }}</td>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-            <td>{{ event.event_type }}</td>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📅</div>
+        <h3>No events yet</h3>
+        <p>Get started by creating your first event.</p>
+        <br>
+        <a href="/create_event" class="btn-champs btn-primary-champs">+ Create Event</a>
+    </div>
+    {% endif %}
 
-            <td>{{ event.event_date }}</td>
-
-            <td>{{ event.location }}</td>
-
-            <td>{{ event.status }}</td>
-
-        </tr>
-
-        {% endfor %}
-
-    </tbody>
-
-</table>
+</div>
 
 {% endblock %}
