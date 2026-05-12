@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Members</h1>
+        <p class="page-subtitle">{{ members | length }} member{{ 's' if members | length != 1 else '' }} registered</p>
+    </div>
+    <a href="/members/add" class="btn-champs btn-primary-champs">+ Add Member</a>
+</div>
+
+<div class="table-card">
+    {% if members %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Position</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members %}
+            <tr>
+                <td class="event-id-cell">{{ m.member_id }}</td>
+                <td class="event-name-cell">{{ m.full_name }}</td>
+                <td>{{ m.role or '—' }}</td>
+                <td>{{ m.position or '—' }}</td>
+                <td style="font-size: 13px;">
+                    {% if m.email %}<div>{{ m.email }}</div>{% endif %}
+                    {% if m.phone %}<div style="color:#888;">{{ m.phone }}</div>{% endif %}
+                    {% if not m.email and not m.phone %}—{% endif %}
+                </td>
+                <td>
+                    {% if m.status == 'Active' %}
+                        <span class="status-badge status-ongoing">Active</span>
+                    {% else %}
+                        <span class="status-badge status-finished">{{ m.status }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="actions-cell">
+                        <button type="button"
+                                class="btn-champs btn-danger-champs btn-sm-champs"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteMemberModal{{ m.member_id }}">
+                            Remove
+                        </button>
+                    </div>
+
+                    <!-- Delete Modal -->
+                    <div class="modal fade" id="deleteMemberModal{{ m.member_id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Remove Member</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to remove <strong>{{ m.full_name }}</strong>?
+                                    Their attendance records will remain but will be unlinked.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn-champs btn-secondary-champs" data-bs-dismiss="modal">Cancel</button>
+                                    <form action="/members/{{ m.member_id }}/delete" method="POST" style="margin:0;">
+                                        <button type="submit" class="btn-champs btn-danger-champs">Yes, Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">👥</div>
+        <h3>No members yet</h3>
+        <p>Add your first member to start recording attendance.</p>
+        <br>
+        <a href="/members/add" class="btn-champs btn-primary-champs">+ Add Member</a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+ 
+{% block content %}
+ 
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Add Member</h1>
+        <p class="page-subtitle">Fill in the details below to register a new member.</p>
+    </div>
+    <a href="/members" class="btn-champs btn-secondary-champs">← Back to Members</a>
+</div>
+ 
+<div class="form-card">
+    <form method="POST" id="memberForm" novalidate>
+ 
+        <p class="form-section-title">Personal Information</p>
+ 
+        <div class="form-row">
+            <div class="form-group">
+                <label class="champs-label" for="first_name">
+                    First Name <span class="required-star">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="first_name"
+                    name="first_name"
+                    class="champs-input"
+                    placeholder="e.g. Juan"
+                    value="{{ form_data.first_name if form_data else '' }}"
+                    maxlength="100"
+                    required>
+                <div class="field-error" id="err_first_name"></div>
+            </div>
+ 
+            <div class="form-group">
+                <label class="champs-label" for="last_name">
+                    Last Name <span class="required-star">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="last_name"
+                    name="last_name"
+                    class="champs-input"
+                    placeholder="e.g. dela Cruz"
+                    value="{{ form_data.last_name if form_data else '' }}"
+                    maxlength="100"
+                    required>
+                <div class="field-error" id="err_last_name"></div>
+            </div>
+        </div>
+ 
+        <div class="form-row">
+            <div class="form-group">
+                <label class="champs-label" for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="champs-input"
+                    placeholder="e.g. juan@email.com"
+                    value="{{ form_data.email if form_data else '' }}"
+                    maxlength="255">
+            </div>
+ 
+            <div class="form-group">
+                <label class="champs-label" for="phone">Phone</label>
+                <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    class="champs-input"
+                    placeholder="e.g. 09171234567"
+                    value="{{ form_data.phone if form_data else '' }}"
+                    maxlength="30">
+            </div>
+        </div>
+ 
+        <p class="form-section-title">Role & Status</p>
+ 
+        <div class="form-row">
+            <div class="form-group">
+                <label class="champs-label" for="role">Role</label>
+                <input
+                    type="text"
+                    id="role"
+                    name="role"
+                    class="champs-input"
+                    placeholder="e.g. Core Team"
+                    value="{{ form_data.role if form_data else '' }}"
+                    maxlength="100">
+            </div>
+ 
+            <div class="form-group">
+                <label class="champs-label" for="position">Position</label>
+                <input
+                    type="text"
+                    id="position"
+                    name="position"
+                    class="champs-input"
+                    placeholder="e.g. Secretary"
+                    value="{{ form_data.position if form_data else '' }}"
+                    maxlength="100">
+            </div>
+        </div>
+ 
+        <div class="form-group" style="max-width: 240px;">
+            <label class="champs-label" for="status">Status</label>
+            <select id="status" name="status" class="champs-select">
+                <option value="Active" {% if not form_data or form_data.get('status', 'Active') == 'Active' %}selected{% endif %}>Active</option>
+                <option value="Inactive" {% if form_data and form_data.get('status') == 'Inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+ 
+        <div class="form-actions">
+            <button type="submit" class="btn-champs btn-primary-champs">Add Member</button>
+            <a href="/members" class="btn-champs btn-secondary-champs">Cancel</a>
+        </div>
+ 
+    </form>
+</div>
+ 
+<script>
+(function () {
+    const form = document.getElementById('memberForm');
+ 
+    function showErr(name, msg) {
+        const el  = document.getElementById('err_' + name);
+        const inp = document.getElementById(name);
+        if (el)  el.textContent = msg;
+        if (inp) inp.classList.toggle('is-invalid', !!msg);
+    }
+ 
+    form.addEventListener('submit', function (e) {
+        let valid = true;
+ 
+        ['first_name', 'last_name'].forEach(name => {
+            const val = document.getElementById(name).value.trim();
+            if (!val) {
+                showErr(name, name.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()) + ' is required.');
+                valid = false;
+            } else {
+                showErr(name, '');
+            }
+        });
+ 
+        if (!valid) {
+            e.preventDefault();
+            form.querySelector('.is-invalid')?.focus();
+        }
+    });
+})();
+</script>
+ 
+{% endblock %}

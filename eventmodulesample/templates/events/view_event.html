@@ -20,7 +20,6 @@
             </span>
         </div>
         <div style="display:flex; gap:8px; flex-shrink:0;">
-            <a href="/events/{{ event.event_id }}/edit" class="btn-champs btn-edit-champs">Edit</a>
             <button type="button"
                     class="btn-champs btn-danger-champs"
                     data-bs-toggle="modal"
@@ -55,12 +54,6 @@
                     <div class="detail-item-value">{{ event.event_date | safe_date('%B %d, %Y') }}</div>
                 </div>
                 <div class="detail-item">
-                    <div class="detail-item-label">Expected Attendance</div>
-                    <div class="detail-item-value">
-                        {{ event.expected_attendance or '—' }}
-                    </div>
-                </div>
-                <div class="detail-item">
                     <div class="detail-item-label">Start Time</div>
                     <div class="detail-item-value">{{ event.start_time | safe_time }}</div>
                 </div>
@@ -68,12 +61,54 @@
                     <div class="detail-item-label">End Time</div>
                     <div class="detail-item-value">{{ event.end_time | safe_time }}</div>
                 </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">Expected Attendance</div>
+                    <div class="detail-item-value">{{ event.expected_attendance or '—' }}</div>
+                </div>
             </div>
+        </div>
+
+        <!-- Attendance Summary (live from records) -->
+        <div class="detail-section">
+            <div class="detail-section-label">
+                Attendance Summary
+                <a href="/attendance/{{ event.event_id }}"
+                   style="font-size:0.78rem; font-weight:500; margin-left:10px; text-decoration:none; color: var(--accent, #2563eb);">
+                    Manage →
+                </a>
+            </div>
+
+            {% if attendances %}
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-item-label">Present</div>
+                    <div class="detail-item-value" style="color: #16a34a; font-weight: 600;">{{ present_count }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">Late</div>
+                    <div class="detail-item-value" style="color: #d97706; font-weight: 600;">{{ late_count }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">Absent</div>
+                    <div class="detail-item-value" style="color: #dc2626; font-weight: 600;">{{ absent_count }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item-label">Total Recorded</div>
+                    <div class="detail-item-value" style="font-weight: 600;">{{ attendances | length }}</div>
+                </div>
+            </div>
+            {% else %}
+            <p style="color: var(--text-muted, #888); font-size: 0.9rem; margin: 0;">
+                No attendance recorded yet.
+                <a href="/attendance/{{ event.event_id }}">Add attendees →</a>
+            </p>
+            {% endif %}
         </div>
 
     </div>
 
     <div class="detail-footer">
+        <a href="/attendance/{{ event.event_id }}" class="btn-champs btn-primary-champs">📋 Manage Attendance</a>
         <a href="/events/{{ event.event_id }}/edit" class="btn-champs btn-edit-champs">Edit Event</a>
         <a href="/events" class="btn-champs btn-secondary-champs">Back to List</a>
     </div>
@@ -90,7 +125,7 @@
             </div>
             <div class="modal-body">
                 Are you sure you want to delete <strong>{{ event.event_name }}</strong>?
-                This action cannot be undone.
+                This action cannot be undone and will also remove all attendance records.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-champs btn-secondary-champs" data-bs-dismiss="modal">

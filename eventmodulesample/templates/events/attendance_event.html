@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ event.event_name }}</h1>
+        <p class="page-subtitle">
+            {{ event.event_date | safe_date('%B %d, %Y') }}
+            {% if event.location %} &mdash; {{ event.location }}{% endif %}
+        </p>
+    </div>
+    <a href="/attendance" class="btn-champs btn-secondary-champs">← All Events</a>
+</div>
+
+<!-- Summary Cards -->
+<div class="attendance-summary">
+    <div class="att-stat-card att-present">
+        <div class="att-stat-number">{{ present_count }}</div>
+        <div class="att-stat-label">Present</div>
+    </div>
+    <div class="att-stat-card att-late">
+        <div class="att-stat-number">{{ late_count }}</div>
+        <div class="att-stat-label">Late</div>
+    </div>
+    <div class="att-stat-card att-absent">
+        <div class="att-stat-number">{{ absent_count }}</div>
+        <div class="att-stat-label">Absent</div>
+    </div>
+    <div class="att-stat-card att-total">
+        <div class="att-stat-number">{{ records | length }}</div>
+        <div class="att-stat-label">Recorded</div>
+    </div>
+</div>
+
+<!-- ══ Bulk Add Members ══ -->
+<div class="form-card" style="margin-bottom: 1.5rem;">
+    <p class="form-section-title">Add Members to Attendance</p>
+
+    {% if members %}
+
+    <!-- Tab switcher -->
+    <div style="display:flex; gap:8px; margin-bottom:1rem;">
+        <button type="button" class="btn-champs btn-secondary-champs btn-sm-champs" id="tabSingle"
+                onclick="switchTab('single')" style="font-weight:600;">Single</button>
+        <button type="button" class="btn-champs btn-primary-champs btn-sm-champs" id="tabBulk"
+                onclick="switchTab('bulk')">Bulk Select</button>
+    </div>
+
+    <!-- SINGLE ADD (original) -->
+    <div id="paneSingle">
+        <form method="POST" id="addAttendeeForm" novalidate>
+            <input type="hidden" name="action" value="add">
+            <div class="att-add-row">
+                <div class="form-group" style="flex: 2; margin-bottom: 0;">
+                    <label class="champs-label" for="member_id">
+                        Member <span class="required-star">*</span>
+                    </label>
+                    <select id="member_id" name="member_id" class="champs-select">
+                        <option value="" disabled selected>Select a member…</option>
+                        {% for m in members %}
+                            {% if m.member_id not in recorded_ids %}
+                            <option value="{{ m.member_id }}">
+                                {{ m.last_name }}, {{ m.first_name }}
+                                {% if m.role %} — {{ m.role }}{% endif %}
+                            </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <div class="field-error" id="err_member"></div>
+                </div>
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label class="champs-label" for="attendance_status">Status</label>
+                    <select id="attendance_status" name="attendance_status" class="champs-select">
+                        <option value="Present" selected>Present</option>
+                        <option value="Late">Late</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                </div>
+                <div style="padding-top: 22px;">
+                    <button type="submit" class="btn-champs btn-primary-champs">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- BULK ADD -->
+    <div id="paneBulk" style="display:none;">
+        <form method="POST" id="bulkAddForm" novalidate>
+            <input type="hidden" name="action" value="add_bulk">
+
+            <!-- Search + Select All bar -->
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+                <input type="text" id="bulkSearch" class="champs-input"
+                       placeholder="Search members…"
+                       style="flex:1; min-width:180px; margin-bottom:0;"
+                       oninput="filterBulkList()">
+                <label style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:500; cursor:pointer; white-space:nowrap;">
+                    <input type="checkbox" id="selectAll" onchange="toggleAll(this)">
+                    Select all
+                </label>
+                <select name="bulk_status" id="bulkStatus" class="champs-select"
+                        style="width:auto; min-width:120px; margin-bottom:0;">
+                    <option value="Present" selected>Present</option>
+                    <option value="Late">Late</option>
+                    <option value="Absent">Absent</option>
+                </select>
+            </div>
+
+            <!-- Member checklist -->
+            <div id="bulkMemberList"
+                 style="max-height:280px; overflow-y:auto; border:1px solid var(--border,#e2e8f0);
+                        border-radius:8px; padding:4px 0;">
+                {% set unrecorded = members | selectattr('member_id', 'not in', recorded_ids) | list %}
+                {% if unrecorded %}
+                    {% for m in unrecorded %}
+                    <label class="bulk-member-row" data-name="{{ (m.last_name + ' ' + m.first_name) | lower }}">
+                        <input type="checkbox" name="member_ids" value="{{ m.member_id }}" class="bulk-cb">
+                        <span class="bulk-member-name">{{ m.last_name }}, {{ m.first_name }}</span>
+                        {% if m.role %}<span class="bulk-member-role">{{ m.role }}{% if m.position %} · {{ m.position }}{% endif %}</span>{% endif %}
+                    </label>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding:18px; text-align:center; color:#aaa; font-size:13px;">
+                        All active members are already recorded for this event.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap;">
+                <span id="bulkCount" style="font-size:13px; color:#888;">0 selected</span>
+                <button type="submit" class="btn-champs btn-primary-champs" id="bulkSubmitBtn" disabled>
+                    Add Selected
+                </button>
+            </div>
+            <div class="field-error" id="err_bulk"></div>
+        </form>
+    </div>
+
+    {% else %}
+    <div class="att-no-members-notice">
+        <span>⚠️</span>
+        <div>
+            <strong>No members in the system yet.</strong><br>
+            <span>Add members first, then come back to record attendance.</span><br>
+            <a href="/members/add" class="btn-champs btn-primary-champs btn-sm-champs"
+               style="margin-top: 10px; display: inline-flex;">+ Add a Member</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Attendance Table -->
+<div class="table-card">
+
+    {% if records %}
+    <div class="att-filter-bar" style="padding: 16px 18px 0;">
+        <button class="att-filter-btn active" data-filter="all">All ({{ records | length }})</button>
+        <button class="att-filter-btn" data-filter="present">Present ({{ present_count }})</button>
+        <button class="att-filter-btn" data-filter="late">Late ({{ late_count }})</button>
+        <button class="att-filter-btn" data-filter="absent">Absent ({{ absent_count }})</button>
+    </div>
+
+    <table id="attendanceTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Role / Position</th>
+                <th>Status</th>
+                <th>Recorded At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in records %}
+            <tr data-status="{{ r.attendance_status | lower }}">
+                <td class="event-id-cell">{{ loop.index }}</td>
+                <td class="event-name-cell">{{ r.member.full_name if r.member else '—' }}</td>
+                <td style="color: #888; font-size: 13px;">
+                    {% if r.member %}
+                        {{ r.member.role or '' }}
+                        {% if r.member.role and r.member.position %} · {% endif %}
+                        {{ r.member.position or '' }}
+                        {% if not r.member.role and not r.member.position %}—{% endif %}
+                    {% else %}—{% endif %}
+                </td>
+                <td>
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="action" value="update_status">
+                        <input type="hidden" name="attendance_id" value="{{ r.attendance_id }}">
+                        <select name="attendance_status"
+                                class="champs-select status-inline-select status-{{ r.attendance_status | lower }}"
+                                onchange="this.form.submit()"
+                                style="min-width:110px; padding:5px 10px; font-size:13px;">
+                            <option value="Present" {% if r.attendance_status=='Present' %}selected{% endif %}>Present</option>
+                            <option value="Late"    {% if r.attendance_status=='Late'    %}selected{% endif %}>Late</option>
+                            <option value="Absent"  {% if r.attendance_status=='Absent'  %}selected{% endif %}>Absent</option>
+                        </select>
+                    </form>
+                </td>
+                <td style="font-size:12px; color:#aaa;">
+                    {{ r.check_in_time.strftime('%b %d, %Y %I:%M %p') if r.check_in_time else '—' }}
+                </td>
+                <td>
+                    <form method="POST" style="margin:0;"
+                          onsubmit="return confirm('Remove {{ r.member.full_name if r.member else 'this member' }} from attendance?')">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="attendance_id" value="{{ r.attendance_id }}">
+                        <button type="submit" class="btn-champs btn-danger-champs btn-sm-champs">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <h3>No attendance recorded yet</h3>
+        <p>Use the form above to start adding members.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.bulk-member-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border, #f1f5f9);
+}
+.bulk-member-row:last-child { border-bottom: none; }
+.bulk-member-row:hover { background: var(--surface-alt, #f8fafc); }
+.bulk-member-row input[type="checkbox"] {
+    width: 15px; height: 15px; flex-shrink: 0; cursor: pointer;
+    accent-color: var(--accent, #2563eb);
+}
+.bulk-member-name { font-size: 14px; font-weight: 500; flex: 1; }
+.bulk-member-role { font-size: 12px; color: #888; white-space: nowrap; }
+.bulk-member-row.hidden { display: none; }
+</style>
+
+<script>
+// ── Tab switcher ──────────────────────────────────────────────
+function switchTab(tab) {
+    const single = document.getElementById('paneSingle');
+    const bulk   = document.getElementById('paneBulk');
+    const tSingle = document.getElementById('tabSingle');
+    const tBulk   = document.getElementById('tabBulk');
+    if (tab === 'single') {
+        single.style.display = ''; bulk.style.display = 'none';
+        tSingle.classList.add('btn-primary-champs'); tSingle.classList.remove('btn-secondary-champs');
+        tBulk.classList.add('btn-secondary-champs'); tBulk.classList.remove('btn-primary-champs');
+    } else {
+        single.style.display = 'none'; bulk.style.display = '';
+        tBulk.classList.add('btn-primary-champs'); tBulk.classList.remove('btn-secondary-champs');
+        tSingle.classList.add('btn-secondary-champs'); tSingle.classList.remove('btn-primary-champs');
+    }
+}
+
+// ── Bulk: live search ─────────────────────────────────────────
+function filterBulkList() {
+    const q = document.getElementById('bulkSearch').value.trim().toLowerCase();
+    document.querySelectorAll('.bulk-member-row').forEach(row => {
+        row.classList.toggle('hidden', q && !row.dataset.name.includes(q));
+    });
+}
+
+// ── Bulk: select all ─────────────────────────────────────────
+function toggleAll(master) {
+    document.querySelectorAll('.bulk-cb:not([disabled])').forEach(cb => {
+        const row = cb.closest('.bulk-member-row');
+        if (!row.classList.contains('hidden')) cb.checked = master.checked;
+    });
+    updateBulkCount();
+}
+
+// ── Bulk: count selected ──────────────────────────────────────
+function updateBulkCount() {
+    const n = document.querySelectorAll('.bulk-cb:checked').length;
+    document.getElementById('bulkCount').textContent = n + ' selected';
+    document.getElementById('bulkSubmitBtn').disabled = (n === 0);
+    // sync select-all checkbox
+    const all  = document.querySelectorAll('.bulk-cb:not([disabled])').length;
+    const saEl = document.getElementById('selectAll');
+    if (saEl) saEl.indeterminate = (n > 0 && n < all);
+    if (saEl) saEl.checked = (all > 0 && n === all);
+}
+
+document.querySelectorAll('.bulk-cb').forEach(cb =>
+    cb.addEventListener('change', updateBulkCount)
+);
+
+// ── Bulk: validate before submit ──────────────────────────────
+const bulkForm = document.getElementById('bulkAddForm');
+if (bulkForm) {
+    bulkForm.addEventListener('submit', function(e) {
+        const checked = document.querySelectorAll('.bulk-cb:checked').length;
+        const err = document.getElementById('err_bulk');
+        if (checked === 0) {
+            e.preventDefault();
+            err.textContent = 'Please select at least one member.';
+        } else {
+            err.textContent = '';
+        }
+    });
+}
+
+// ── Filter tabs on attendance table ──────────────────────────
+document.querySelectorAll('.att-filter-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.att-filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const filter = this.dataset.filter;
+        document.querySelectorAll('#attendanceTable tbody tr').forEach(row => {
+            row.style.display = (filter === 'all' || row.dataset.status === filter) ? '' : 'none';
+        });
+    });
+});
+
+// ── Validate single add form ──────────────────────────────────
+const addForm = document.getElementById('addAttendeeForm');
+if (addForm) {
+    addForm.addEventListener('submit', function(e) {
+        const sel = document.getElementById('member_id');
+        const err = document.getElementById('err_member');
+        if (!sel.value) {
+            e.preventDefault();
+            err.textContent = 'Please select a member.';
+            sel.classList.add('is-invalid');
+            sel.focus();
+        } else {
+            err.textContent = '';
+            sel.classList.remove('is-invalid');
+        }
+    });
+}
+</script>
+
+{% endblock %}

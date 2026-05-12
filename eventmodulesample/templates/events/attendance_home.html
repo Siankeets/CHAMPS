@@ -1,0 +1,485 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Attendance & Reports</h1>
+        <p class="page-subtitle">ARIMA forecasts and event attendance overview.</p>
+    </div>
+</div>
+
+<!-- ── Two-panel layout ── -->
+<div class="att-home-layout">
+
+    <!-- ══════════════════════════════════════════════════
+         LEFT  — Forecast Report
+    ═══════════════════════════════════════════════════ -->
+    <div class="att-forecast-panel">
+
+        <div class="panel-heading">
+            <span class="panel-heading-icon">📈</span>
+            <div>
+                <div class="panel-heading-title">Attendance Forecast</div>
+                <div class="panel-heading-sub">ARIMA model · predicted next headcount per event type</div>
+            </div>
+        </div>
+
+        {% if forecasts %}
+
+            {% for fc in forecasts %}
+            <div class="forecast-card">
+                <div class="fc-type-label">{{ fc.event_type }}</div>
+                <div class="fc-headline">
+                    {% if fc.predicted is not none %}
+                        <span class="fc-predicted-num">{{ fc.predicted }}</span>
+                        <span class="fc-predicted-label">predicted attendees</span>
+                        {% if fc.trend == 'up' %}
+                            <span class="fc-trend fc-trend-up">▲ Trending up</span>
+                        {% elif fc.trend == 'down' %}
+                            <span class="fc-trend fc-trend-down">▼ Trending down</span>
+                        {% elif fc.trend == 'stable' %}
+                            <span class="fc-trend fc-trend-stable">→ Stable</span>
+                        {% else %}
+                            <span class="fc-trend fc-trend-new">✦ First forecast</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="fc-no-data">Not enough data to forecast</span>
+                    {% endif %}
+                </div>
+
+                {% if fc.history | length > 1 %}
+                <div class="fc-sparkline" title="Historical headcounts (oldest → newest)">
+                    {% set max_h = fc.history | max %}
+                    {% for val in fc.history %}
+                        <div class="fc-spark-bar"
+                             style="height: {{ ((val / max_h) * 48) | int if max_h > 0 else 4 }}px;"
+                             title="{{ val }}">
+                        </div>
+                    {% endfor %}
+                    {% if fc.predicted is not none %}
+                    <div class="fc-spark-bar fc-spark-forecast"
+                         style="height: {{ ((fc.predicted / max_h) * 48) | int if max_h > 0 else 4 }}px;"
+                         title="Forecast: {{ fc.predicted }}">
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="fc-stats-row">
+                    <div class="fc-stat">
+                        <div class="fc-stat-val">{{ fc.occurrences }}</div>
+                        <div class="fc-stat-label">occurrences</div>
+                    </div>
+                    <div class="fc-stat">
+                        <div class="fc-stat-val">{{ fc.avg_attendance }}</div>
+                        <div class="fc-stat-label">avg. attendance</div>
+                    </div>
+                    <div class="fc-stat">
+                        <div class="fc-stat-val">
+                            <span class="fc-confidence fc-conf-{{ fc.confidence | lower }}">
+                                {{ fc.confidence }}
+                            </span>
+                        </div>
+                        <div class="fc-stat-label">confidence</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <p class="fc-footnote">
+                Forecasts use ARIMA(1,1,1) trained on historical attendance totals per event type.
+                Confidence reflects data availability: High ≥ 5 occurrences, Medium ≥ 3, Low &lt; 3.
+            </p>
+
+        {% else %}
+        <div class="fc-empty">
+            <div class="fc-empty-icon">📊</div>
+            <div class="fc-empty-text">No forecast data yet.</div>
+            <div class="fc-empty-sub">Record attendance for at least 2 events of the same type to generate a forecast.</div>
+        </div>
+        {% endif %}
+
+    </div><!-- /.att-forecast-panel -->
+
+
+    <!-- ══════════════════════════════════════════════════
+         RIGHT — Scrollable Event List
+    ═══════════════════════════════════════════════════ -->
+    <div class="att-events-panel">
+
+        <div class="panel-heading">
+            <span class="panel-heading-icon">📋</span>
+            <div>
+                <div class="panel-heading-title">All Events</div>
+                <div class="panel-heading-sub">{{ event_stats | length }} event{{ 's' if event_stats | length != 1 else '' }}</div>
+            </div>
+        </div>
+
+        <div class="att-event-search-wrap">
+            <input
+                type="text"
+                id="eventSearch"
+                class="att-event-search"
+                placeholder="Search events…"
+                autocomplete="off">
+            <svg class="att-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </div>
+
+        <div class="att-event-list" id="eventList">
+
+            {% if event_stats %}
+            {% for es in event_stats %}
+            {% set ev = es.event %}
+            <div class="att-event-item" data-name="{{ ev.event_name | lower }}" data-type="{{ ev.event_type | lower }}">
+
+                <div class="att-event-item-top">
+                    <div class="att-event-item-name">{{ ev.event_name }}</div>
+                    <span class="status-badge status-{{ ev.status | lower if ev.status else '' }}">
+                        {{ ev.status or '—' }}
+                    </span>
+                </div>
+
+                <div class="att-event-item-meta">
+                    <span>{{ ev.event_date | safe_date }}</span>
+                    {% if ev.location %}<span>· {{ ev.location }}</span>{% endif %}
+                    <span class="att-event-type-pill">{{ ev.event_type }}</span>
+                </div>
+
+                {% set total_possible = es.present + es.late + es.absent %}
+                {% if total_possible > 0 %}
+                <div class="att-mini-bar-wrap" title="Present: {{ es.present }}  Late: {{ es.late }}  Absent: {{ es.absent }}">
+                    <div class="att-mini-bar">
+                        <div class="att-mini-segment att-mini-present"
+                             style="width: {{ ((es.present / total_possible) * 100) | round }}%"></div>
+                        <div class="att-mini-segment att-mini-late"
+                             style="width: {{ ((es.late / total_possible) * 100) | round }}%"></div>
+                        <div class="att-mini-segment att-mini-absent"
+                             style="width: {{ ((es.absent / total_possible) * 100) | round }}%"></div>
+                    </div>
+                    <div class="att-mini-counts">
+                        <span class="att-mini-label att-present-txt">{{ es.present }} present</span>
+                        {% if es.late > 0 %}<span class="att-mini-label att-late-txt">{{ es.late }} late</span>{% endif %}
+                        {% if es.absent > 0 %}<span class="att-mini-label att-absent-txt">{{ es.absent }} absent</span>{% endif %}
+                        <span class="att-mini-label" style="color:#aaa; margin-left:auto;">
+                            {{ es.total }} / {{ ev.expected_attendance or '?' }} exp.
+                        </span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="att-mini-no-rec">No attendance recorded yet</div>
+                {% endif %}
+
+                <div class="att-event-item-footer">
+                    <a href="/attendance/{{ ev.event_id }}"
+                       class="btn-champs btn-primary-champs btn-sm-champs">
+                        Manage →
+                    </a>
+                </div>
+
+            </div>
+            {% endfor %}
+
+            <div class="att-no-results" id="noResults" style="display:none;">
+                <div style="font-size:28px; margin-bottom:8px;">🔍</div>
+                <div>No events match your search.</div>
+            </div>
+
+            {% else %}
+            <div class="fc-empty">
+                <div class="fc-empty-icon">📅</div>
+                <div class="fc-empty-text">No events yet.</div>
+                <div class="fc-empty-sub">
+                    <a href="/create_event" class="btn-champs btn-primary-champs" style="margin-top:12px; display:inline-flex;">
+                        + Create Event
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+        </div><!-- /.att-event-list -->
+
+    </div><!-- /.att-events-panel -->
+
+</div><!-- /.att-home-layout -->
+
+
+<!-- ══════════════════════════════════════════════════
+     CHARTS SECTION — full width below the two panels
+═══════════════════════════════════════════════════ -->
+{% if event_stats %}
+<div class="charts-section">
+
+    <div class="charts-section-heading">
+        <span>📊</span>
+        <div>
+            <div class="panel-heading-title">Attendance Visual Report</div>
+            <div class="panel-heading-sub">Charts across all recorded events</div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+
+        <!-- Chart 1: Stacked bar — present/late/absent per event -->
+        <div class="chart-card">
+            <div class="chart-card-title">Present / Late / Absent per Event</div>
+            <div class="chart-card-subtitle">Stacked bar — total recorded headcount breakdown</div>
+            <div class="chart-wrap">
+                <canvas id="chartStacked"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 2: Doughnut — overall status distribution -->
+        <div class="chart-card">
+            <div class="chart-card-title">Overall Status Distribution</div>
+            <div class="chart-card-subtitle">Across all events combined</div>
+            <div class="chart-wrap chart-wrap-sm">
+                <canvas id="chartDoughnut"></canvas>
+            </div>
+        </div>
+
+        <!-- Chart 3: Line — attendance rate over time -->
+        <div class="chart-card chart-card-wide">
+            <div class="chart-card-title">Attendance Rate Over Time</div>
+            <div class="chart-card-subtitle">Present + Late as % of total recorded per event</div>
+            <div class="chart-wrap">
+                <canvas id="chartLine"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endif %}
+
+<style>
+/* ── Charts section ─────────────────────────────── */
+.charts-section {
+    margin-top: 2rem;
+    background: var(--surface, #fff);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 14px;
+    padding: 1.5rem;
+}
+.charts-section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+    font-size: 20px;
+}
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+.chart-card {
+    background: var(--surface-alt, #f8fafc);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+}
+.chart-card-wide { grid-column: 1 / -1; }
+.chart-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main, #1e293b);
+    margin-bottom: 2px;
+}
+.chart-card-subtitle {
+    font-size: 12px;
+    color: var(--text-muted, #94a3b8);
+    margin-bottom: 1rem;
+}
+.chart-wrap { position: relative; height: 220px; }
+.chart-wrap-sm { height: 220px; }
+@media (max-width: 700px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .chart-card-wide { grid-column: auto; }
+}
+</style>
+
+<!-- Chart.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+// ── Live search filter ────────────────────────────────────────
+const searchInput = document.getElementById('eventSearch');
+const noResults   = document.getElementById('noResults');
+if (searchInput) {
+    searchInput.addEventListener('input', function () {
+        const q = this.value.trim().toLowerCase();
+        const items = document.querySelectorAll('.att-event-item');
+        let visible = 0;
+        items.forEach(item => {
+            const match = !q || (item.dataset.name||'').includes(q) || (item.dataset.type||'').includes(q);
+            item.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        if (noResults) noResults.style.display = (visible === 0 && items.length > 0) ? '' : 'none';
+    });
+}
+
+// ── Chart data from Jinja ─────────────────────────────────────
+const eventData = [
+    {% for es in event_stats %}
+    {
+        label: {{ es.event.event_name | tojson }},
+        date:  {{ es.event.event_date | safe_date | tojson }},
+        present: {{ es.present }},
+        late:    {{ es.late }},
+        absent:  {{ es.absent }},
+        total:   {{ es.total }},
+    },
+    {% endfor %}
+].reverse(); // oldest → newest for timeline charts
+
+// ── Colour tokens ─────────────────────────────────────────────
+const C_PRESENT = 'rgba(22,163,74,0.85)';
+const C_LATE    = 'rgba(217,119,6,0.85)';
+const C_ABSENT  = 'rgba(220,38,38,0.85)';
+const C_PRESENT_B = 'rgba(22,163,74,1)';
+const C_LATE_B    = 'rgba(217,119,6,1)';
+const C_ABSENT_B  = 'rgba(220,38,38,1)';
+
+const labels = eventData.map(d => d.label.length > 22 ? d.label.slice(0,22)+'…' : d.label);
+
+const chartDefaults = {
+    font: { family: "'DM Sans', sans-serif", size: 12 },
+    color: '#64748b',
+};
+Chart.defaults.font.family = chartDefaults.font.family;
+Chart.defaults.font.size   = chartDefaults.font.size;
+Chart.defaults.color       = chartDefaults.color;
+
+// ── Chart 1: Stacked Bar ──────────────────────────────────────
+{% if event_stats %}
+new Chart(document.getElementById('chartStacked'), {
+    type: 'bar',
+    data: {
+        labels,
+        datasets: [
+            {
+                label: 'Present',
+                data: eventData.map(d => d.present),
+                backgroundColor: C_PRESENT,
+                borderColor: C_PRESENT_B,
+                borderWidth: 1,
+            },
+            {
+                label: 'Late',
+                data: eventData.map(d => d.late),
+                backgroundColor: C_LATE,
+                borderColor: C_LATE_B,
+                borderWidth: 1,
+            },
+            {
+                label: 'Absent',
+                data: eventData.map(d => d.absent),
+                backgroundColor: C_ABSENT,
+                borderColor: C_ABSENT_B,
+                borderWidth: 1,
+            },
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'top', labels: { boxWidth: 12, padding: 14 } },
+            tooltip: { mode: 'index', intersect: false },
+        },
+        scales: {
+            x: { stacked: true, grid: { display: false } },
+            y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } },
+        },
+    }
+});
+
+// ── Chart 2: Doughnut ─────────────────────────────────────────
+const totalPresent = eventData.reduce((s,d)=>s+d.present,0);
+const totalLate    = eventData.reduce((s,d)=>s+d.late,0);
+const totalAbsent  = eventData.reduce((s,d)=>s+d.absent,0);
+
+new Chart(document.getElementById('chartDoughnut'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Present', 'Late', 'Absent'],
+        datasets: [{
+            data: [totalPresent, totalLate, totalAbsent],
+            backgroundColor: [C_PRESENT, C_LATE, C_ABSENT],
+            borderColor: ['#fff','#fff','#fff'],
+            borderWidth: 3,
+            hoverOffset: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                        const pct = total ? ((ctx.parsed / total)*100).toFixed(1) : 0;
+                        return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+// ── Chart 3: Line — attendance rate % ────────────────────────
+const rateData = eventData.map(d => {
+    if (!d.total) return null;
+    return +(((d.present + d.late) / d.total) * 100).toFixed(1);
+});
+
+new Chart(document.getElementById('chartLine'), {
+    type: 'line',
+    data: {
+        labels,
+        datasets: [{
+            label: 'Attendance Rate (%)',
+            data: rateData,
+            borderColor: 'rgba(37,99,235,0.9)',
+            backgroundColor: 'rgba(37,99,235,0.08)',
+            pointBackgroundColor: 'rgba(37,99,235,1)',
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            tension: 0.35,
+            fill: true,
+            spanGaps: true,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.parsed.y}% attendance rate`
+                }
+            }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: { callback: v => v + '%' },
+            }
+        }
+    }
+});
+{% endif %}
+</script>
+
+{% endblock %}
