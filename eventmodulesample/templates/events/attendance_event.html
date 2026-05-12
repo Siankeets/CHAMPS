@@ -111,16 +111,18 @@
             <div id="bulkMemberList"
                  style="max-height:280px; overflow-y:auto; border:1px solid var(--border,#e2e8f0);
                         border-radius:8px; padding:4px 0;">
-                {% set unrecorded = members | selectattr('member_id', 'not in', recorded_ids) | list %}
-                {% if unrecorded %}
-                    {% for m in unrecorded %}
-                    <label class="bulk-member-row" data-name="{{ (m.last_name + ' ' + m.first_name) | lower }}">
-                        <input type="checkbox" name="member_ids" value="{{ m.member_id }}" class="bulk-cb">
-                        <span class="bulk-member-name">{{ m.last_name }}, {{ m.first_name }}</span>
-                        {% if m.role %}<span class="bulk-member-role">{{ m.role }}{% if m.position %} · {{ m.position }}{% endif %}</span>{% endif %}
-                    </label>
-                    {% endfor %}
-                {% else %}
+                {% set unrecorded_count = namespace(value=0) %}
+                {% for m in members %}
+                    {% if m.member_id not in recorded_ids %}
+                        {% set unrecorded_count.value = unrecorded_count.value + 1 %}
+                        <label class="bulk-member-row" data-name="{{ (m.last_name + ' ' + m.first_name) | lower }}">
+                            <input type="checkbox" name="member_ids" value="{{ m.member_id }}" class="bulk-cb">
+                            <span class="bulk-member-name">{{ m.last_name }}, {{ m.first_name }}</span>
+                            {% if m.role %}<span class="bulk-member-role">{{ m.role }}{% if m.position %} · {{ m.position }}{% endif %}</span>{% endif %}
+                        </label>
+                    {% endif %}
+                {% endfor %}
+                {% if unrecorded_count.value == 0 %}
                     <div style="padding:18px; text-align:center; color:#aaa; font-size:13px;">
                         All active members are already recorded for this event.
                     </div>
