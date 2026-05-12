@@ -1,0 +1,201 @@
+member_id,member_name,current_role,breakfasts_attended,agm_attended,formation_seminars_completed,training_sessions_completed,months_in_current_role,eligible
+1,Mark Aquino,Servant,23,37,4,5,9,0
+2,Ana Dela Cruz,Full Member,25,24,4,8,17,1
+3,Mark Torres,Candidate,4,5,4,1,10,0
+4,Ramon Mercado,BCLP,4,3,0,0,12,0
+5,Elena Manalo,Initiate,17,8,0,2,1,1
+6,Patrick Soriano,Initiate,1,7,0,0,12,0
+7,Miguel Guevara,BCLP,9,2,0,4,2,0
+8,Maria Villanueva,Full Member,29,25,4,6,7,1
+9,Maria Bondoc,Secretariat,43,40,4,8,13,1
+10,Michael Guevara,GL,55,66,4,12,26,0
+11,Luz Bondoc,BCLP,5,5,0,3,1,0
+12,David Flores,BCLP,18,17,0,2,10,0
+13,James Mendoza,Candidate,21,4,4,2,7,0
+14,John Bautista,AGL,57,44,4,11,15,0
+15,Teresa Aquino,Candidate,16,13,4,4,5,0
+16,Rosa Villanueva,Initiate,11,19,0,2,12,1
+17,Josephine Villanueva,Servant,33,37,4,6,11,1
+18,Peter Navarro,BCLP,19,8,0,0,2,0
+19,Elena Santos,Initiate,8,7,0,1,2,1
+20,Francisco Torres,Initiate,8,4,0,1,11,1
+21,Fernando Gonzales,Full Member,16,27,4,4,15,0
+22,Ana Ramos,Chapter Head,76,76,4,19,26,0
+23,Maricel Ramos,Secretariat,42,47,4,4,16,0
+24,Paul Bautista,Full Member,20,23,4,5,15,1
+25,Juan Ocampo,AGL,59,47,4,9,16,0
+26,James Soriano,AGL,58,58,4,11,14,0
+27,Ronaldo Mendoza,Candidate,21,14,4,0,4,0
+28,Patrick Ocampo,GL,67,69,4,12,27,0
+29,Ramon Cruz,Candidate,14,23,4,2,13,0
+30,James Guevara,Full Member,31,15,4,8,18,0
+31,Elena Vergara,Full Member,17,21,4,4,15,0
+32,Ana Guevara,Initiate,3,4,0,1,12,0
+33,Cristina Navarro,BCLP,20,5,0,0,9,0
+34,Mark Mercado,BCLP,18,4,0,3,3,0
+35,Juan Cruz,Full Member,21,19,4,7,17,0
+36,Francisco Santos,GL,56,65,4,13,19,0
+37,Fernando Castillo,Full Member,17,28,4,6,15,0
+38,Miguel Aquino,Secretariat,38,40,4,4,21,0
+39,John Vergara,Full Member,26,30,4,8,16,1
+40,Josephine Aquino,BCLP,12,6,0,2,4,0
+41,John Garcia,Servant,37,33,4,8,15,1
+42,Grace Vergara,Servant,36,32,4,7,13,1
+43,Fernando Paglinawan,Secretariat,38,34,4,4,9,0
+44,Carlo Bondoc,Initiate,1,10,0,0,8,0
+45,James Gonzales,Initiate,1,7,0,4,1,0
+46,Paul Vergara,Initiate,10,3,0,0,6,1
+47,Mary Lim,Secretariat,31,35,4,7,17,0
+48,Maria Bondoc,BCLP,15,6,0,1,11,0
+49,Teresa Aquino,AGL,56,48,4,8,16,0
+50,Francisco Torres,Candidate,18,20,4,4,12,1
+51,John Mendoza,BCLP,7,18,0,1,10,0
+52,Liza Reyes,Full Member,20,24,4,6,9,1
+53,David Castillo,Initiate,5,14,0,0,11,1
+54,Eduardo Mercado,AGL,55,51,4,10,20,0
+55,Dante Vergara,Full Member,27,26,4,7,17,1
+56,Ramon Santos,Candidate,20,21,4,1,8,0
+57,Rosa Manalo,BCLP,17,11,0,3,7,0
+58,Maricel Dela Cruz,Full Member,23,20,4,6,10,1
+59,Ramon Villanueva,Candidate,14,17,4,4,11,1
+60,Francisco Rodriguez,Servant,29,28,4,5,7,0
+61,Carmen Aquino,Full Member,12,27,4,6,8,0
+62,Ronaldo Mercado,Secretariat,45,44,4,4,18,0
+63,Grace Villanueva,Servant,25,29,4,4,17,0
+64,Patrick Morales,Initiate,0,3,0,2,12,0
+65,Francisco Garcia,AGL,60,44,4,11,23,0
+66,Grace Gonzales,Candidate,4,10,4,3,8,0
+67,Josephine Santos,BCLP,21,9,0,0,3,0
+68,Jose Lim,Servant,29,35,4,7,13,0
+69,Grace Bautista,Initiate,18,8,0,0,12,1
+70,Ana Tan,Servant,23,26,4,5,10,0
+71,Patrick Mendoza,Initiate,8,2,0,1,9,1
+72,Dante Pascual,Full Member,31,19,4,7,9,0
+73,Dante Reyes,BCLP,14,1,0,0,10,0
+74,Grace Santos,Initiate,2,20,0,0,3,0
+75,Roberto Ramos,Full Member,24,25,4,8,17,1
+76,John Aguilar,Full Member,27,32,4,7,13,1
+77,Patrick Diaz,GL,67,64,4,15,28,0
+78,Cristina Gonzales,BCLP,19,13,0,1,2,0
+79,Patrick Vergara,Candidate,18,23,4,4,9,1
+80,Jose Mercado,AGL,53,42,4,9,13,0
+81,Juan Mercado,Initiate,6,20,0,4,6,1
+82,Gloria Pascual,Secretariat,39,49,4,8,13,0
+83,Fernando Villanueva,Initiate,5,17,0,4,0,0
+84,Paul Manalo,Initiate,8,20,0,0,9,1
+85,Francisco Cruz,Servant,27,28,4,8,16,0
+86,Peter Flores,Candidate,22,12,4,0,4,0
+87,Ana Torres,Servant,24,38,4,6,7,0
+88,Fernando Paglinawan,BCLP,11,5,0,1,7,0
+89,Juan Cruz,Full Member,32,25,4,5,13,1
+90,Mark Castillo,Secretariat,33,47,4,5,19,0
+91,Maricel Ocampo,AGL,54,41,4,9,16,0
+92,Rosa Reyes,BCLP,24,17,0,0,2,0
+93,Carlo Gonzales,Chapter Head,85,74,4,17,35,0
+94,Mary Paglinawan,Initiate,20,17,0,1,10,1
+95,Ricardo Ocampo,BCLP,12,5,0,3,9,0
+96,Rosa Castillo,Full Member,23,32,4,7,17,1
+97,Rosa Manalo,Initiate,17,2,0,4,6,1
+98,James Guevara,Servant,38,33,4,6,15,1
+99,David Cruz,Initiate,7,3,0,3,4,1
+100,Mary Bautista,BCLP,11,2,0,3,13,0
+101,Fernando Castillo,BCLP,8,1,0,2,6,0
+102,Juan Cruz,Secretariat,37,48,4,8,9,0
+103,Mary Aquino,Candidate,14,21,4,0,5,0
+104,Gloria Manalo,Candidate,6,13,4,4,13,0
+105,Elena Diaz,Candidate,13,20,4,2,13,0
+106,James Soriano,Initiate,20,16,0,4,3,1
+107,Carmen Morales,Candidate,16,11,4,1,13,0
+108,Ricardo Paglinawan,AGL,49,54,4,11,13,0
+109,Miguel Mercado,Initiate,9,20,0,4,5,1
+110,Fernando Morales,GL,53,56,4,16,27,0
+111,Gloria Mercado,Initiate,7,5,0,3,6,1
+112,John Soriano,Candidate,24,12,4,4,10,1
+113,Francisco Guevara,BCLP,5,20,0,0,1,0
+114,Mary Castillo,Full Member,27,12,4,7,11,0
+115,Carlo Bautista,Candidate,17,24,4,4,6,1
+116,Michael Santos,Initiate,18,17,0,1,9,1
+117,John Rodriguez,Candidate,18,6,4,2,6,0
+118,Luz Ocampo,GL,54,62,4,16,24,0
+119,Fernando Gonzales,Full Member,24,16,4,5,7,0
+120,Mark Cruz,Full Member,30,32,4,5,7,1
+121,Miguel Diaz,Initiate,15,2,0,4,12,1
+122,Antonio Gonzales,Initiate,4,16,0,3,1,1
+123,Mary Aquino,Full Member,19,14,4,6,13,0
+124,Josephine Guevara,Initiate,19,13,0,1,8,1
+125,Eduardo Paglinawan,Secretariat,38,35,4,8,15,0
+126,Paul Diaz,Servant,35,28,4,8,18,0
+127,Ramon Soriano,BCLP,12,1,0,0,6,0
+128,John Diaz,Full Member,25,27,4,8,18,1
+129,Mary Mercado,Full Member,12,28,4,5,7,0
+130,Maricel Torres,BCLP,10,9,0,1,1,0
+131,John Navarro,Regional Director,93,98,4,21,38,0
+132,Teresa Castillo,Full Member,22,29,4,7,12,1
+133,Elena Mendoza,Candidate,22,10,4,2,3,0
+134,Gloria Aguilar,Chapter Head,74,65,4,16,29,0
+135,Ramon Tan,Initiate,2,12,0,3,9,0
+136,Ricardo Torres,Initiate,15,17,0,1,4,1
+137,Michael Cruz,Candidate,11,13,4,1,15,0
+138,Maria Diaz,Initiate,14,17,0,0,6,1
+139,Luz Diaz,Full Member,17,26,4,5,15,0
+140,Mary Guevara,Candidate,6,12,4,2,13,0
+141,Mark Aguilar,Initiate,2,1,0,1,12,0
+142,Francisco Navarro,Initiate,8,17,0,0,10,1
+143,Mark Aguilar,Initiate,9,12,0,2,7,1
+144,Maricel Cruz,Secretariat,45,41,4,7,14,0
+145,John Flores,BCLP,17,15,0,3,4,0
+146,Maria Tan,BCLP,6,13,0,4,10,0
+147,Paul Castillo,Candidate,22,23,4,2,10,0
+148,Peter Mendoza,BCLP,8,20,0,2,8,0
+149,David Navarro,AGL,48,53,4,11,19,0
+150,Cristina Pascual,GL,60,62,4,16,29,0
+151,Francisco Ocampo,Initiate,11,5,0,2,5,1
+152,Josephine Tan,Servant,29,23,4,5,10,0
+153,Ronaldo Diaz,AGL,44,42,4,10,24,0
+154,Fernando Mercado,BCLP,5,11,0,4,9,0
+155,Eduardo Bondoc,Candidate,9,19,4,3,7,0
+156,Gloria Aguilar,Initiate,13,10,0,2,2,1
+157,Gloria Santos,Servant,33,34,4,8,13,1
+158,Juan Flores,Candidate,14,17,4,1,7,0
+159,David Aguilar,Servant,24,40,4,7,7,0
+160,Eduardo Bautista,Candidate,10,20,4,3,15,0
+161,Dante Torres,Servant,28,21,4,4,14,0
+162,Miguel Castillo,Chapter Head,68,85,4,16,31,0
+163,Rosa Cruz,BCLP,21,6,0,4,5,0
+164,Peter Navarro,Initiate,5,16,0,0,10,1
+165,Juan Paglinawan,Full Member,21,30,4,7,12,1
+166,Josephine Bautista,Candidate,5,21,4,1,4,0
+167,Carmen Rodriguez,BCLP,18,9,0,3,12,0
+168,Grace Dela Cruz,Candidate,18,15,4,2,15,0
+169,Francisco Aquino,Full Member,22,24,4,6,18,1
+170,Peter Garcia,BCLP,7,17,0,1,5,0
+171,Juan Guevara,Full Member,30,24,4,7,6,1
+172,John Lim,GL,64,59,4,15,18,0
+173,Gloria Pascual,Candidate,7,16,4,0,10,0
+174,Carlo Mendoza,Servant,35,22,4,8,16,0
+175,Mark Castillo,Candidate,16,9,4,4,12,0
+176,Dante Santos,Full Member,24,30,4,8,16,1
+177,Patrick Dela Cruz,Initiate,20,15,0,3,10,1
+178,John Rodriguez,BCLP,19,6,0,4,3,0
+179,John Ramos,Full Member,30,23,4,7,14,1
+180,Luz Guevara,Secretariat,46,30,4,8,16,0
+181,Rosa Villanueva,BCLP,21,13,0,4,12,0
+182,Maria Vergara,Full Member,12,19,4,5,6,0
+183,Maria Santos,Initiate,2,6,0,1,8,0
+184,Patrick Manalo,Secretariat,33,35,4,6,15,0
+185,Dante Mendoza,AGL,54,50,4,9,23,0
+186,Teresa Rodriguez,Full Member,14,27,4,4,17,0
+187,David Tan,BCLP,10,10,0,1,11,0
+188,Eduardo Garcia,Secretariat,44,39,4,7,13,0
+189,Dante Reyes,Full Member,23,19,4,4,18,0
+190,Patrick Paglinawan,BCLP,6,0,0,3,10,0
+191,Josephine Bautista,Initiate,3,7,0,1,1,0
+192,Michael Flores,Servant,21,28,4,7,7,0
+193,Ronaldo Ocampo,Full Member,22,12,4,7,13,0
+194,Ricardo Paglinawan,BCLP,15,2,0,1,6,0
+195,Teresa Reyes,Secretariat,36,46,4,6,18,0
+196,David Reyes,Servant,27,29,4,6,17,0
+197,Jose Bondoc,Candidate,7,17,4,1,5,0
+198,Miguel Flores,Servant,27,25,4,8,7,0
+199,Dante Rodriguez,Initiate,18,13,0,4,6,1
+200,Luz Diaz,BCLP,14,3,0,1,4,0
