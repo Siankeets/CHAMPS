@@ -5,3 +5,5 @@ Pivot from hard yes/no eligibility to degree/scale of eligiblity.
 
 Add noise based on reasonable assumptions (even w/o consultations) to make the synthetic dataset less >deterministic<, !not realistically calibrated!. 
 Present / word as "variablity injectiion".
+
+Should be done in wed/thurs.
