@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Record | BCBP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='personal_record.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            <div>
+                <h2>BCBP</h2>
+                <span>Faith • Leadership • Service</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hide" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Profile">
+            <h3>Juan Dela Cruz</h3>
+            <p>Active Member</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/profile">My Profile</a>
+            <a href="/my_events">My Events</a>
+            <a href="/attendance">Attendance Record</a>
+            <a href="/course_materials">Course Materials</a>
+            <a href="/personal_record" class="active">Personal Record</a>
+            <a href="/notifications">Notifications</a>
+            <a href="/ai_helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="dashboard-content">
+
+        <section class="record-header">
+            <h1>Personal Record</h1>
+            <p>Track your BCBP membership progress, milestones, and official records.</p>
+        </section>
+
+        <!-- MEMBER INFO -->
+        <section class="member-info-card">
+            <h2>Member Information</h2>
+
+            <div class="info-grid">
+                <div><strong>Full Name:</strong> Juan Dela Cruz</div>
+                <div><strong>Member ID:</strong> BCBP-2026-001</div>
+                <div><strong>Chapter:</strong> BCBP Manila Chapter</div>
+                <div><strong>Membership Type:</strong> Active Member</div>
+                <div><strong>Join Date:</strong> January 15, 2026</div>
+                <div><strong>Status:</strong> Active</div>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Events Attended</h3>
+                <p class="big-number">24</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Courses Completed</h3>
+                <p class="big-number">6</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Service Hours</h3>
+                <p class="big-number">54</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Leadership Progress</h3>
+                <p class="big-number">78%</p>
+            </div>
+        </section>
+
+        <!-- FORMATION RECORD -->
+        <section class="record-section">
+            <h2>Formation & Ministry Record</h2>
+
+            <div class="record-grid">
+                <div class="record-card completed">
+                    <h3>Orientation Completed</h3>
+                    <p>Successfully completed new member orientation.</p>
+                </div>
+
+                <div class="record-card completed">
+                    <h3>Leadership Formation</h3>
+                    <p>Leadership development program completed.</p>
+                </div>
+
+                <div class="record-card completed">
+                    <h3>Retreat Participation</h3>
+                    <p>Annual spiritual retreat attended.</p>
+                </div>
+
+                <div class="record-card progress">
+                    <h3>Mentorship Program</h3>
+                    <p>Currently under leadership mentorship.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- DOCUMENTS -->
+        <section class="record-section">
+            <h2>Official Documents</h2>
+
+            <div class="document-buttons">
+                <button onclick="viewDocument('Membership Certificate')">View Membership Certificate</button>
+                <button onclick="downloadDocument('Member ID')">Download Member ID</button>
+                <button onclick="viewDocument('Activity Report')">View Activity Report</button>
+            </div>
+        </section>
+
+        <!-- TIMELINE -->
+        <section class="record-section">
+            <h2>Achievement Timeline</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>Joined BCBP</h3>
+                    <p>January 15, 2026</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h3>First Fellowship</h3>
+                    <p>February 2026</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h3>First Outreach</h3>
+                    <p>March 2026</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h3>Leadership Training Completed</h3>
+                    <p>June 2026</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- MODAL -->
+<div id="docModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="docTitle"></h2>
+        <p>This official member document is available for your personal BCBP records.</p>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hide");
+}
+
+function viewDocument(doc) {
+    document.getElementById("docTitle").innerText = doc;
+    document.getElementById("docModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("docModal").style.display = "none";
+}
+
+function downloadDocument(doc) {
+    alert(doc + " download started.");
+}
+</script>
+
+</body>
+</html>

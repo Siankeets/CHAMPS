@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Help Desk | BCBP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='ai_helpdesk.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            <div>
+                <h2>BCBP</h2>
+                <span>Faith • Leadership • Service</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hide" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Profile">
+            <h3>Juan Dela Cruz</h3>
+            <p>Active Member</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/profile">My Profile</a>
+            <a href="/my_events">My Events</a>
+            <a href="/attendance">Attendance Record</a>
+            <a href="/course_materials">Course Materials</a>
+            <a href="/personal_record">Personal Record</a>
+            <a href="/notifications">Notifications</a>
+            <a href="/ai_helpdesk" class="active">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-content">
+
+        <section class="helpdesk-header">
+            <h1>AI Help Desk</h1>
+            <p>Your smart BCBP assistant for events, attendance, courses, and membership support.</p>
+        </section>
+
+        <section class="chat-container">
+
+            <div class="chat-box" id="chatBox">
+
+                <div class="message ai-message">
+                    <strong>BCBP AI Assistant</strong>
+                    <p>Hello! How can I help you today?</p>
+                </div>
+
+                <div class="message ai-message">
+                    <strong>Quick Help:</strong>
+                    <div class="quick-buttons">
+                        <button onclick="quickReply('How do I register for an event?')">Event Questions</button>
+                        <button onclick="quickReply('How can I update my membership profile?')">Membership Help</button>
+                        <button onclick="quickReply('How do I access course materials?')">Course Assistance</button>
+                        <button onclick="quickReply('Where can I check my attendance?')">Attendance Inquiry</button>
+                        <button onclick="quickReply('I need technical support.')">Technical Support</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="chat-input-section">
+                <input type="text" id="userInput" placeholder="Type your message here..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hide");
+}
+
+function sendMessage() {
+    const input = document.getElementById("userInput");
+    const chatBox = document.getElementById("chatBox");
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    chatBox.innerHTML += `
+        <div class="message user-message">
+            <strong>You</strong>
+            <p>${message}</p>
+        </div>
+    `;
+
+    let reply = "I'm here to assist you with your BCBP account.";
+
+    if (message.toLowerCase().includes("event")) {
+        reply = "You can register for events through the My Events page.";
+    } else if (message.toLowerCase().includes("attendance")) {
+        reply = "Your attendance history is available in the Attendance Record section.";
+    } else if (message.toLowerCase().includes("course")) {
+        reply = "Course materials are available under the Course Materials page.";
+    } else if (message.toLowerCase().includes("profile")) {
+        reply = "You can update your member profile in My Profile.";
+    } else if (message.toLowerCase().includes("technical")) {
+        reply = "Please contact support or refresh the page for technical issues.";
+    }
+
+    setTimeout(() => {
+        chatBox.innerHTML += `
+            <div class="message ai-message">
+                <strong>BCBP AI Assistant</strong>
+                <p>${reply}</p>
+            </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 700);
+
+    input.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function quickReply(question) {
+    document.getElementById("userInput").value = question;
+    sendMessage();
+}
+</script>
+
+</body>
+</html>

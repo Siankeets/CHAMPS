@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Materials | BCBP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='course_materials.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            <div>
+                <h2>BCBP</h2>
+                <span>Faith • Leadership • Service</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+
+    <aside class="sidebar hide" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Profile">
+            <h3>Juan Dela Cruz</h3>
+            <p>Active Member</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/profile">My Profile</a>
+            <a href="/my_events">My Events</a>
+            <a href="/attendance">Attendance Record</a>
+            <a href="/course_materials" class="active">Course Materials</a>
+            <a href="/personal_record">Personal Record</a>
+            <a href="/notifications">Notifications</a>
+            <a href="/ai_helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+
+        <section class="materials-header">
+            <h1>Course Materials</h1>
+            <p>Access training resources, orientation manuals, and faith formation learning materials.</p>
+        </section>
+
+        <section class="summary-grid">
+            <div class="summary-card">
+                <h3>Total Courses</h3>
+                <p class="big-number">12</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Completed</h3>
+                <p class="big-number">6</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>In Progress</h3>
+                <p class="big-number">3</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Certificates</h3>
+                <p class="big-number">2</p>
+            </div>
+        </section>
+
+        <section class="materials-section">
+            <h2>New Member Orientation</h2>
+
+            <div class="materials-grid">
+
+                <div class="material-card">
+                    <span class="status newbie">New Member</span>
+                    <h3>Welcome to BCBP Guide</h3>
+                    <p>Introduction to the BCBP mission, vision, and community culture.</p>
+
+                    <div class="material-buttons">
+                        <button onclick="viewMaterial('Welcome to BCBP Guide')">View Manual</button>
+                        <button onclick="downloadMaterial()">Download Guide</button>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <span class="status newbie">Orientation</span>
+                    <h3>Member Handbook</h3>
+                    <p>Community rules, participation expectations, and member responsibilities.</p>
+
+                    <div class="material-buttons">
+                        <button onclick="viewMaterial('Member Handbook')">View Manual</button>
+                        <button onclick="startCourse('Orientation Program')">Start Orientation</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="materials-section">
+            <h2>Training Courses</h2>
+
+            <div class="materials-grid">
+
+                <div class="material-card">
+                    <span class="status progress">In Progress</span>
+                    <h3>Christian Leadership</h3>
+                    <p>Leadership development grounded in Christian values.</p>
+                    <p><strong>Progress:</strong> 65%</p>
+
+                    <div class="material-buttons">
+                        <button onclick="viewMaterial('Christian Leadership')">View Material</button>
+                        <button onclick="downloadMaterial()">Download PDF</button>
+                        <button onclick="startCourse('Christian Leadership')">Continue</button>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <span class="status completed">Completed</span>
+                    <h3>Faith Formation</h3>
+                    <p>Deepen spiritual understanding and Christian growth.</p>
+                    <p><strong>Progress:</strong> 100%</p>
+
+                    <div class="material-buttons">
+                        <button onclick="viewMaterial('Faith Formation')">View Material</button>
+                        <button onclick="downloadMaterial()">Download PDF</button>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <span class="status progress">In Progress</span>
+                    <h3>Business Ethics</h3>
+                    <p>Ethical leadership principles for Christian professionals.</p>
+                    <p><strong>Progress:</strong> 40%</p>
+
+                    <div class="material-buttons">
+                        <button onclick="viewMaterial('Business Ethics')">View Material</button>
+                        <button onclick="downloadMaterial()">Download PDF</button>
+                        <button onclick="startCourse('Business Ethics')">Continue</button>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <span class="status completed">Completed</span>
+                    <h3>Community Service Training</h3>
+                    <p>Preparation for outreach, volunteer service, and evangelization.</p>
+
+                    <div class="material-buttons">
+                        <button onclick="viewMaterial('Community Service Training')">View Material</button>
+                        <button onclick="downloadMaterial()">Download PDF</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div id="materialModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="materialTitle"></h2>
+        <p>This learning material is available for BCBP members. Continue learning and strengthen your spiritual and leadership journey.</p>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hide");
+}
+
+function viewMaterial(title) {
+    document.getElementById("materialTitle").innerText = title;
+    document.getElementById("materialModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("materialModal").style.display = "none";
+}
+
+function downloadMaterial() {
+    alert("Material download started.");
+}
+
+function startCourse(course) {
+    alert("Continuing: " + course);
+}
+</script>
+
+</body>
+</html>

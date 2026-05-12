@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | BCBP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='notifications.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            <div>
+                <h2>BCBP</h2>
+                <span>Faith • Leadership • Service</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hide" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Profile">
+            <h3>Juan Dela Cruz</h3>
+            <p>Active Member</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/profile">My Profile</a>
+            <a href="/my_events">My Events</a>
+            <a href="/attendance">Attendance Record</a>
+            <a href="/course_materials">Course Materials</a>
+            <a href="/personal_record">Personal Record</a>
+            <a href="/notifications" class="active">Notifications</a>
+            <a href="/ai_helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="dashboard-content">
+
+        <section class="notifications-header">
+            <h1>Notifications</h1>
+            <p>Stay updated with event reminders, announcements, and member activity alerts.</p>
+        </section>
+
+        <!-- SUMMARY -->
+        <section class="summary-grid">
+            <div class="summary-card">
+                <h3>Unread</h3>
+                <p class="big-number">5</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Event Reminders</h3>
+                <p class="big-number">3</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Course Updates</h3>
+                <p class="big-number">2</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Announcements</h3>
+                <p class="big-number">4</p>
+            </div>
+        </section>
+
+        <!-- FILTER -->
+        <section class="filter-section">
+            <button onclick="filterNotifications('all')">All</button>
+            <button onclick="filterNotifications('unread')">Unread</button>
+            <button onclick="filterNotifications('important')">Important</button>
+            <button onclick="markAllRead()">Mark All as Read</button>
+        </section>
+
+        <!-- NOTIFICATIONS -->
+        <section class="notifications-list" id="notificationsList">
+
+            <div class="notification-card unread important">
+                <div class="notification-content">
+                    <h3>Leadership Fellowship Reminder</h3>
+                    <p>Your upcoming fellowship starts tomorrow at 7:00 PM.</p>
+                    <span>10 minutes ago</span>
+                </div>
+
+                <div class="notification-actions">
+                    <span class="badge important-badge">Important</span>
+                    <button onclick="viewNotification('Leadership Fellowship Reminder', 'Your upcoming fellowship starts tomorrow at 7:00 PM.')">View</button>
+                    <button onclick="markRead(this)">Mark Read</button>
+                    <button onclick="deleteNotification(this)">Delete</button>
+                </div>
+            </div>
+
+            <div class="notification-card unread">
+                <div class="notification-content">
+                    <h3>Course Material Updated</h3>
+                    <p>New Christian Leadership training materials are now available.</p>
+                    <span>1 hour ago</span>
+                </div>
+
+                <div class="notification-actions">
+                    <span class="badge unread-badge">Unread</span>
+                    <button onclick="viewNotification('Course Material Updated', 'New Christian Leadership training materials are now available.')">View</button>
+                    <button onclick="markRead(this)">Mark Read</button>
+                    <button onclick="deleteNotification(this)">Delete</button>
+                </div>
+            </div>
+
+            <div class="notification-card">
+                <div class="notification-content">
+                    <h3>Attendance Confirmation</h3>
+                    <p>Your attendance for Prayer Gathering has been recorded.</p>
+                    <span>Yesterday</span>
+                </div>
+
+                <div class="notification-actions">
+                    <span class="badge read-badge">Read</span>
+                    <button onclick="viewNotification('Attendance Confirmation', 'Your attendance for Prayer Gathering has been recorded.')">View</button>
+                    <button onclick="deleteNotification(this)">Delete</button>
+                </div>
+            </div>
+
+            <div class="notification-card important">
+                <div class="notification-content">
+                    <h3>New Member Orientation Reminder</h3>
+                    <p>Please complete your orientation materials this week.</p>
+                    <span>2 days ago</span>
+                </div>
+
+                <div class="notification-actions">
+                    <span class="badge important-badge">Important</span>
+                    <button onclick="viewNotification('Orientation Reminder', 'Please complete your orientation materials this week.')">View</button>
+                    <button onclick="markRead(this)">Mark Read</button>
+                    <button onclick="deleteNotification(this)">Delete</button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- MODAL -->
+<div id="notifModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="notifTitle"></h2>
+        <p id="notifMessage"></p>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hide");
+}
+
+function viewNotification(title, message) {
+    document.getElementById("notifTitle").innerText = title;
+    document.getElementById("notifMessage").innerText = message;
+    document.getElementById("notifModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("notifModal").style.display = "none";
+}
+
+function markRead(button) {
+    const card = button.closest(".notification-card");
+    card.classList.remove("unread");
+    button.remove();
+}
+
+function deleteNotification(button) {
+    const card = button.closest(".notification-card");
+    card.remove();
+}
+
+function markAllRead() {
+    document.querySelectorAll(".notification-card").forEach(card => {
+        card.classList.remove("unread");
+    });
+
+    document.querySelectorAll(".notification-actions button").forEach(btn => {
+        if (btn.innerText === "Mark Read") {
+            btn.remove();
+        }
+    });
+}
+
+function filterNotifications(type) {
+    const cards = document.querySelectorAll(".notification-card");
+
+    cards.forEach(card => {
+        if (type === "all") {
+            card.style.display = "flex";
+        } else if (type === "unread") {
+            card.style.display = card.classList.contains("unread") ? "flex" : "none";
+        } else if (type === "important") {
+            card.style.display = card.classList.contains("important") ? "flex" : "none";
+        }
+    });
+}
+</script>
+
+</body>
+</html>

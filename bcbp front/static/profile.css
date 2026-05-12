@@ -1,0 +1,359 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background:
+        linear-gradient(rgba(5, 22, 45, 0.45), rgba(5, 22, 45, 0.45)),
+        url('bg bcbp.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #1c1c1c;
+}
+
+/* HEADER */
+.navbar {
+    width: 100%;
+    padding: 16px 50px;
+    background: rgba(6, 20, 40, 0.92);
+    backdrop-filter: blur(14px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+}
+
+.left-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.menu-toggle {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.menu-toggle:hover {
+    background: rgba(255,255,255,0.22);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo img {
+    width: 52px;
+    height: 52px;
+}
+
+.logo h2 {
+    color: white;
+    font-size: 22px;
+}
+
+.logo span {
+    color: #d6d6d6;
+    font-size: 11px;
+}
+
+.logout-btn {
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.3s;
+    background: linear-gradient(135deg, #d4af37, #f3db8f);
+    color: #0d2f5f;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* LAYOUT */
+.dashboard-wrapper {
+    display: flex;
+    padding-top: 84px;
+    min-height: calc(100vh - 60px);
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 280px;
+    background: rgba(13, 47, 95, 0.78);
+    backdrop-filter: blur(14px);
+    color: white;
+    padding: 30px 20px;
+    min-height: calc(100vh - 84px);
+    position: sticky;
+    top: 84px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+    z-index: 999;
+}
+
+.sidebar.hide {
+    transform: translateX(-100%);
+    margin-right: -280px;
+}
+
+.profile-card {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.profile-card img {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+}
+
+.profile-card h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.profile-card p {
+    color: #d9e2ec;
+    font-size: 14px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 16px;
+    border-radius: 12px;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: rgba(255,255,255,0.16);
+}
+
+/* MAIN */
+.dashboard-content {
+    flex: 1;
+    padding: 35px;
+}
+
+.profile-header {
+    background: rgba(13, 47, 95, 0.72);
+    backdrop-filter: blur(14px);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+.profile-header h1 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.profile-header p {
+    color: #e8edf5;
+    font-size: 15px;
+}
+
+/* FORM */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.profile-picture-section {
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.profile-picture-section img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: white;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.profile-picture-section button,
+.save-btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #d4af37, #f3db8f);
+    color: #0d2f5f;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.form-card {
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.form-card h2 {
+    color: #0d2f5f;
+    margin-bottom: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #0d2f5f;
+}
+
+.form-group input,
+.form-group select {
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #d6dce5;
+    font-size: 14px;
+}
+
+.password-group span {
+    position: absolute;
+    right: 14px;
+    top: 42px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.save-btn {
+    align-self: flex-start;
+}
+
+/* FOOTER */
+footer {
+    background: rgba(6, 17, 29, 0.78);
+    backdrop-filter: blur(12px);
+    color: white;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding: 20px;
+}
+
+/* TABLET */
+@media screen and (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+}
+
+/* MOBILE */
+@media screen and (max-width: 768px) {
+    .navbar {
+        padding: 12px 16px;
+    }
+
+    .logo img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .logo h2 {
+        font-size: 18px;
+    }
+
+    .logo span {
+        font-size: 9px;
+    }
+
+    .logout-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+
+    .menu-toggle {
+        padding: 8px 10px;
+        font-size: 16px;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        width: 260px;
+        height: calc(100vh - 64px);
+        overflow-y: auto;
+        padding-bottom: 40px;
+        transform: translateX(-100%);
+    }
+
+    .sidebar:not(.hide) {
+        transform: translateX(0);
+    }
+
+    .sidebar.hide {
+        transform: translateX(-100%);
+        margin-right: 0;
+    }
+
+    .dashboard-content {
+        padding: 20px;
+    }
+
+    .profile-header h1 {
+        font-size: 26px;
+    }
+
+    .save-btn {
+        width: 100%;
+    }
+}

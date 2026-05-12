@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Events | BCBP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='my_events.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            <div>
+                <h2>BCBP</h2>
+                <span>Faith • Leadership • Service</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hide" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Profile">
+            <h3>Juan Dela Cruz</h3>
+            <p>Active Member</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/profile">My Profile</a>
+            <a href="/my_events" class="active">My Events</a>
+            <a href="/attendance">Attendance Record</a>
+            <a href="/course_materials">Course Materials</a>
+            <a href="/personal_record">Personal Record</a>
+            <a href="/notifications">Notifications</a>
+            <a href="/ai_helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-content">
+
+        <section class="events-header">
+            <h1>My Events</h1>
+            <p>Track your upcoming activities, reminders, and BCBP participation events.</p>
+        </section>
+
+        <section class="reminder-grid">
+
+            <div class="next-event-card">
+                <h2>Next Event Reminder</h2>
+                <h3>Leadership Fellowship</h3>
+                <p>July 25, 2026 • 7:00 PM</p>
+                <span>Starts in 3 Days</span>
+            </div>
+
+            <div class="calendar-card">
+                <h2>July 2026 Calendar</h2>
+
+                <div class="calendar">
+                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                    <span></span><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span class="event-day">11</span><span>12</span>
+                    <span>13</span><span>14</span><span>15</span><span class="event-day">16</span><span>17</span><span>18</span><span>19</span>
+                    <span>20</span><span>21</span><span>22</span><span>23</span><span class="today">24</span><span class="event-day">25</span><span>26</span>
+                    <span>27</span><span>28</span><span class="event-day">29</span><span>30</span><span>31</span>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="events-section">
+            <h2>Upcoming Events</h2>
+
+            <div class="event-grid">
+
+                <div class="event-card">
+                    <span class="status upcoming">Upcoming</span>
+                    <h3>Leadership Fellowship</h3>
+                    <p>📅 July 25, 2026</p>
+                    <p>📍 BCBP Conference Hall</p>
+                    <p>Faith and leadership gathering for active members.</p>
+
+                    <div class="event-buttons">
+                        <button onclick="showDetails(
+                            'Leadership Fellowship',
+                            'July 25, 2026',
+                            '7:00 PM',
+                            'BCBP Conference Hall',
+                            'A faith and leadership gathering focused on Christian business values and spiritual growth.'
+                        )">View Details</button>
+
+                        <button id="registerBtn1" onclick="registerEvent('registerBtn1')">Register</button>
+                    </div>
+                </div>
+
+                <div class="event-card">
+                    <span class="status upcoming">Upcoming</span>
+                    <h3>Community Outreach</h3>
+                    <p>📅 July 29, 2026</p>
+                    <p>📍 Manila Outreach Center</p>
+                    <p>Serve communities through outreach and volunteer programs.</p>
+
+                    <div class="event-buttons">
+                        <button onclick="showDetails(
+                            'Community Outreach',
+                            'July 29, 2026',
+                            '9:00 AM',
+                            'Manila Outreach Center',
+                            'Community volunteer outreach to support local families and evangelization missions.'
+                        )">View Details</button>
+
+                        <button id="registerBtn2" onclick="registerEvent('registerBtn2')">Register</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="events-section">
+            <h2>Past Events</h2>
+
+            <div class="event-grid">
+
+                <div class="event-card">
+                    <span class="status completed">Completed</span>
+                    <h3>Prayer Gathering</h3>
+                    <p>📅 July 10, 2026</p>
+                    <p>📍 Main Worship Hall</p>
+                    <p>Monthly spiritual formation and prayer fellowship.</p>
+                </div>
+
+                <div class="event-card">
+                    <span class="status completed">Completed</span>
+                    <h3>Breakfast Fellowship</h3>
+                    <p>📅 July 03, 2026</p>
+                    <p>📍 BCBP Meeting Room</p>
+                    <p>Christian leadership discussion over fellowship breakfast.</p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- MODAL -->
+<div id="eventModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span onclick="closeModal()" class="close-btn">&times;</span>
+        <h2 id="modalTitle"></h2>
+        <p><strong>Date:</strong> <span id="modalDate"></span></p>
+        <p><strong>Time:</strong> <span id="modalTime"></span></p>
+        <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+        <p id="modalDescription"></p>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hide");
+}
+
+function registerEvent(buttonId) {
+    const btn = document.getElementById(buttonId);
+
+    if (btn.innerText === "Register") {
+        btn.innerText = "Registered";
+        btn.style.background = "#0d2f5f";
+        btn.style.color = "white";
+        alert("Successfully registered!");
+    } else {
+        btn.innerText = "Register";
+        btn.style.background = "";
+        btn.style.color = "";
+        alert("Registration cancelled.");
+    }
+}
+
+function showDetails(title, date, time, location, description) {
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("modalDate").innerText = date;
+    document.getElementById("modalTime").innerText = time;
+    document.getElementById("modalLocation").innerText = location;
+    document.getElementById("modalDescription").innerText = description;
+    document.getElementById("eventModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("eventModal").style.display = "none";
+}
+</script>
+
+</body>
+</html>

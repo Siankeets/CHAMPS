@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | BCBP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            <div>
+                <h2>BCBP</h2>
+                <span>Faith • Leadership • Service</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+
+</header>
+
+<div class="dashboard-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hide" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Profile">
+            <h3>Juan Dela Cruz</h3>
+            <p>Active Member</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/profile" class="active">My Profile</a>
+           <a href="/my_events">My Events</a>
+         <a href="/attendance">Attendance Record</a>
+            <a href="/course_materials" class="active">Course Materials</a>
+          <a href="/personal_record">Personal Record</a>
+  <a href="/notifications">Notifications</a>
+  <a href="/ai_helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-content">
+
+        <section class="profile-header">
+            <h1>My Profile</h1>
+            <p>Manage your personal information, account details, and password settings.</p>
+        </section>
+
+        <form class="profile-form" onsubmit="saveProfile(event)">
+
+            <!-- PROFILE IMAGE -->
+            <div class="profile-picture-section">
+                <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Profile Picture">
+                <button type="button">Change Photo</button>
+            </div>
+
+            <!-- PERSONAL INFO -->
+            <div class="form-card">
+                <h2>Personal Information</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" value="Juan Dela Cruz" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" value="juan@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" value="+63 912 345 6789">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Birthday</label>
+                        <input type="date">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Address</label>
+                        <input type="text" value="Manila, Philippines">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Occupation</label>
+                        <input type="text" value="Business Professional">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Chapter</label>
+                        <input type="text" value="BCBP Manila Chapter">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Membership Type</label>
+                        <select>
+                            <option>Active Member</option>
+                            <option>Regular Member</option>
+                            <option>Volunteer</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="form-card">
+                <h2>Change Password</h2>
+
+                <div class="form-grid">
+
+                    <div class="form-group password-group">
+                        <label>Current Password</label>
+                        <input type="password" id="currentPassword">
+                        <span onclick="togglePassword('currentPassword')">👁</span>
+                    </div>
+
+                    <div class="form-group password-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword">
+                        <span onclick="togglePassword('newPassword')">👁</span>
+                    </div>
+
+                    <div class="form-group password-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="confirmPassword">
+                        <span onclick="togglePassword('confirmPassword')">👁</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <button type="submit" class="save-btn">Save Changes</button>
+
+        </form>
+
+    </main>
+
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("hide");
+}
+
+function togglePassword(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === "password" ? "text" : "password";
+}
+
+function saveProfile(event) {
+    event.preventDefault();
+
+    const newPass = document.getElementById("newPassword").value;
+    const confirmPass = document.getElementById("confirmPassword").value;
+
+    if (newPass !== confirmPass) {
+        alert("Passwords do not match.");
+        return;
+    }
+
+    alert("Profile updated successfully!");
+}
+</script>
+
+</body>
+</html>

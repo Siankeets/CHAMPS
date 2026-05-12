@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCBP Member Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            <div>
+                <h2>BCBP</h2>
+                <span>Faith • Leadership • Service</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar hide" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Profile">
+            <h3>Juan Dela Cruz</h3>
+            <p>Active Member</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="/dashboard" class="active">Dashboard</a>
+            <a href="/profile">My Profile</a>
+            <a href="/my_events">My Events</a>
+            <a href="/attendance">Attendance Record</a>
+            <a href="/course_materials">Course Materials</a>
+            <a href="/personal_record">Personal Record</a>
+            <a href="/notifications">Notifications</a>
+            <a href="/ai_helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-content">
+
+        <section class="welcome-banner">
+            <h1>Welcome Back, Juan!</h1>
+            <p>
+                Stay connected with your BCBP community, track your journey,
+                and stay updated with upcoming events and activities.
+            </p>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Attendance Rate</h3>
+                <p class="big-number">92%</p>
+                <span>Excellent Participation</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Events Joined</h3>
+                <p class="big-number">18</p>
+                <span>This Year</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Courses Completed</h3>
+                <p class="big-number">6</p>
+                <span>Spiritual Formation</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Service Hours</h3>
+                <p class="big-number">54</p>
+                <span>Community Outreach</span>
+            </div>
+        </section>
+
+        <section class="quick-actions">
+            <h2>Quick Access</h2>
+
+            <div class="action-grid">
+                <div class="action-card">
+                    <h3>Upcoming Events</h3>
+                    <p>View chapter activities and register for events.</p>
+                    <button>View Events</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>Attendance History</h3>
+                    <p>Check your attendance participation records.</p>
+                    <button>View Record</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>Course Materials</h3>
+                    <p>Access BCBP resources and learning materials.</p>
+                    <button>Open Materials</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>Personal Profile</h3>
+                    <p>Update your member information and progress.</p>
+                    <button>Manage Profile</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-lower">
+
+            <div class="calendar-card">
+                <h2>Upcoming Schedule</h2>
+                <ul>
+                    <li><strong>July 14</strong> Breakfast Fellowship</li>
+                    <li><strong>July 20</strong> Leadership Formation Session</li>
+                    <li><strong>July 28</strong> Community Outreach Program</li>
+                    <li><strong>August 03</strong> Monthly Prayer Gathering</li>
+                </ul>
+            </div>
+
+            <div class="progress-card">
+                <h2>Member Progress</h2>
+
+                <div class="progress-item">
+                    <label>Spiritual Growth</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill spiritual"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <label>Leadership Development</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill leadership"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <label>Community Service</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill service"></div>
+                    </div>
+                </div>
+
+                <div class="progress-item">
+                    <label>Participation</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill participation"></div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hide");
+}
+</script>
+
+</body>
+</html>
