@@ -12,6 +12,7 @@
 
 <div class="table-card">
     {% if members %}
+    <div class="table-scroll-wrap">
     <table>
         <thead>
             <tr>
@@ -79,6 +80,7 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% else %}
     <div class="empty-state">
