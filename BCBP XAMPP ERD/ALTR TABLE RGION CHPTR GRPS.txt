@@ -1,0 +1,13 @@
+
+
+ALTER TABLE group_unit
+    ADD COLUMN group_leader_id INT NULL,
+    ADD COLUMN assistant_leader_id INT NULL,
+    ADD FOREIGN KEY (group_leader_id) 
+        REFERENCES members(member_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    ADD FOREIGN KEY (assistant_leader_id) 
+        REFERENCES members(member_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE;
