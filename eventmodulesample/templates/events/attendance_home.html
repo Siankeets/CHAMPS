@@ -4,119 +4,20 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Attendance & Reports</h1>
-        <p class="page-subtitle">ARIMA forecasts and event attendance overview.</p>
+        <h1 class="page-title">Attendance</h1>
+        <p class="page-subtitle">Select an event to view attendance details.</p>
     </div>
 </div>
 
 <!-- ── Two-panel layout ── -->
-<div class="att-home-layout">
+<div class="att-split-layout">
 
     <!-- ══════════════════════════════════════════════════
-         LEFT  — Forecast Report
+         LEFT — Scrollable Event List
     ═══════════════════════════════════════════════════ -->
-    <div class="att-forecast-panel">
+    <div class="att-list-panel">
 
-        <div class="panel-heading">
-            <span class="panel-heading-icon">📈</span>
-            <div>
-                <div class="panel-heading-title">Attendance Forecast</div>
-                <div class="panel-heading-sub">ARIMA model · predicted next headcount per event type</div>
-            </div>
-        </div>
-
-        {% if forecasts %}
-
-            {% for fc in forecasts %}
-            <div class="forecast-card">
-                <div class="fc-type-label">{{ fc.event_type }}</div>
-                <div class="fc-headline">
-                    {% if fc.predicted is not none %}
-                        <span class="fc-predicted-num">{{ fc.predicted }}</span>
-                        <span class="fc-predicted-label">predicted attendees</span>
-                        {% if fc.trend == 'up' %}
-                            <span class="fc-trend fc-trend-up">▲ Trending up</span>
-                        {% elif fc.trend == 'down' %}
-                            <span class="fc-trend fc-trend-down">▼ Trending down</span>
-                        {% elif fc.trend == 'stable' %}
-                            <span class="fc-trend fc-trend-stable">→ Stable</span>
-                        {% else %}
-                            <span class="fc-trend fc-trend-new">✦ First forecast</span>
-                        {% endif %}
-                    {% else %}
-                        <span class="fc-no-data">Not enough data to forecast</span>
-                    {% endif %}
-                </div>
-
-                {% if fc.history | length > 1 %}
-                <div class="fc-sparkline" title="Historical headcounts (oldest → newest)">
-                    {% set max_h = fc.history | max %}
-                    {% for val in fc.history %}
-                        <div class="fc-spark-bar"
-                             style="height: {{ ((val / max_h) * 48) | int if max_h > 0 else 4 }}px;"
-                             title="{{ val }}">
-                        </div>
-                    {% endfor %}
-                    {% if fc.predicted is not none %}
-                    <div class="fc-spark-bar fc-spark-forecast"
-                         style="height: {{ ((fc.predicted / max_h) * 48) | int if max_h > 0 else 4 }}px;"
-                         title="Forecast: {{ fc.predicted }}">
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                <div class="fc-stats-row">
-                    <div class="fc-stat">
-                        <div class="fc-stat-val">{{ fc.occurrences }}</div>
-                        <div class="fc-stat-label">occurrences</div>
-                    </div>
-                    <div class="fc-stat">
-                        <div class="fc-stat-val">{{ fc.avg_attendance }}</div>
-                        <div class="fc-stat-label">avg. attendance</div>
-                    </div>
-                    <div class="fc-stat">
-                        <div class="fc-stat-val">
-                            <span class="fc-confidence fc-conf-{{ fc.confidence | lower }}">
-                                {{ fc.confidence }}
-                            </span>
-                        </div>
-                        <div class="fc-stat-label">confidence</div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-
-            <p class="fc-footnote">
-                Forecasts use ARIMA(1,1,1) trained on historical attendance totals per event type.
-                Confidence reflects data availability: High ≥ 5 occurrences, Medium ≥ 3, Low &lt; 3.
-            </p>
-
-        {% else %}
-        <div class="fc-empty">
-            <div class="fc-empty-icon">📊</div>
-            <div class="fc-empty-text">No forecast data yet.</div>
-            <div class="fc-empty-sub">Record attendance for at least 2 events of the same type to generate a forecast.</div>
-        </div>
-        {% endif %}
-
-    </div><!-- /.att-forecast-panel -->
-
-
-    <!-- ══════════════════════════════════════════════════
-         RIGHT — Scrollable Event List
-    ═══════════════════════════════════════════════════ -->
-    <div class="att-events-panel">
-
-        <div class="panel-heading">
-            <span class="panel-heading-icon">📋</span>
-            <div>
-                <div class="panel-heading-title">All Events</div>
-                <div class="panel-heading-sub">{{ event_stats | length }} event{{ 's' if event_stats | length != 1 else '' }}</div>
-            </div>
-        </div>
-
-        <div class="att-event-search-wrap">
+        <div class="att-list-search-wrap">
             <input
                 type="text"
                 id="eventSearch"
@@ -135,7 +36,14 @@
             {% if event_stats %}
             {% for es in event_stats %}
             {% set ev = es.event %}
-            <div class="att-event-item" data-name="{{ ev.event_name | lower }}" data-type="{{ ev.event_type | lower }}">
+            <div class="att-event-item"
+                 data-name="{{ ev.event_name | lower }}"
+                 data-type="{{ ev.event_type | lower }}"
+                 data-event-id="{{ ev.event_id }}"
+                 onclick="selectEvent(this)"
+                 tabindex="0"
+                 role="button"
+                 aria-label="Select {{ ev.event_name }}">
 
                 <div class="att-event-item-top">
                     <div class="att-event-item-name">{{ ev.event_name }}</div>
@@ -162,24 +70,15 @@
                              style="width: {{ ((es.absent / total_possible) * 100) | round }}%"></div>
                     </div>
                     <div class="att-mini-counts">
-                        <span class="att-mini-label att-present-txt">{{ es.present }} present</span>
-                        {% if es.late > 0 %}<span class="att-mini-label att-late-txt">{{ es.late }} late</span>{% endif %}
-                        {% if es.absent > 0 %}<span class="att-mini-label att-absent-txt">{{ es.absent }} absent</span>{% endif %}
-                        <span class="att-mini-label" style="color:#aaa; margin-left:auto;">
-                            {{ es.total }} / {{ ev.expected_attendance or '?' }} exp.
-                        </span>
+                        <span class="att-mini-label att-present-txt">{{ es.present }}P</span>
+                        {% if es.late > 0 %}<span class="att-mini-label att-late-txt">{{ es.late }}L</span>{% endif %}
+                        {% if es.absent > 0 %}<span class="att-mini-label att-absent-txt">{{ es.absent }}A</span>{% endif %}
+                        <span class="att-mini-label" style="color:#aaa; margin-left:auto;">{{ es.total }} recorded</span>
                     </div>
                 </div>
                 {% else %}
-                <div class="att-mini-no-rec">No attendance recorded yet</div>
+                <div class="att-mini-no-rec">No attendance recorded</div>
                 {% endif %}
-
-                <div class="att-event-item-footer">
-                    <a href="/attendance/{{ ev.event_id }}"
-                       class="btn-champs btn-primary-champs btn-sm-champs">
-                        Manage →
-                    </a>
-                </div>
 
             </div>
             {% endfor %}
@@ -201,117 +100,458 @@
             </div>
             {% endif %}
 
-        </div><!-- /.att-event-list -->
-
-    </div><!-- /.att-events-panel -->
-
-</div><!-- /.att-home-layout -->
-
-
-<!-- ══════════════════════════════════════════════════
-     CHARTS SECTION — full width below the two panels
-═══════════════════════════════════════════════════ -->
-{% if event_stats %}
-<div class="charts-section">
-
-    <div class="charts-section-heading">
-        <span>📊</span>
-        <div>
-            <div class="panel-heading-title">Attendance Visual Report</div>
-            <div class="panel-heading-sub">Charts across all recorded events</div>
         </div>
-    </div>
+    </div><!-- /.att-list-panel -->
 
-    <div class="charts-grid">
 
-        <!-- Chart 1: Stacked bar — present/late/absent per event -->
-        <div class="chart-card">
-            <div class="chart-card-title">Present / Late / Absent per Event</div>
-            <div class="chart-card-subtitle">Stacked bar — total recorded headcount breakdown</div>
-            <div class="chart-wrap">
-                <canvas id="chartStacked"></canvas>
+    <!-- ══════════════════════════════════════════════════
+         RIGHT — Event Detail Panel
+    ═══════════════════════════════════════════════════ -->
+    <div class="att-detail-panel" id="detailPanel">
+
+        <!-- Empty state (no event selected) -->
+        <div class="att-detail-empty" id="detailEmpty">
+            <div class="att-detail-empty-icon">📋</div>
+            <div class="att-detail-empty-title">Select an Event</div>
+            <div class="att-detail-empty-sub">Click any event on the left to view its attendance details.</div>
+        </div>
+
+        <!-- Populated state (event selected) — hidden until JS fills it -->
+        <div class="att-detail-content" id="detailContent" style="display:none;">
+
+            <!-- Header -->
+            <div class="att-detail-header">
+                <div>
+                    <div class="att-detail-event-name" id="dEventName">—</div>
+                    <div class="att-detail-event-meta" id="dEventMeta">—</div>
+                </div>
+                <span class="status-badge" id="dEventStatus">—</span>
             </div>
-        </div>
 
-        <!-- Chart 2: Doughnut — overall status distribution -->
-        <div class="chart-card">
-            <div class="chart-card-title">Overall Status Distribution</div>
-            <div class="chart-card-subtitle">Across all events combined</div>
-            <div class="chart-wrap chart-wrap-sm">
-                <canvas id="chartDoughnut"></canvas>
+            <!-- Stat cards row -->
+            <div class="att-detail-stats">
+                <div class="att-dstat att-dstat-present">
+                    <div class="att-dstat-num" id="dPresent">0</div>
+                    <div class="att-dstat-label">Present</div>
+                </div>
+                <div class="att-dstat att-dstat-late">
+                    <div class="att-dstat-num" id="dLate">0</div>
+                    <div class="att-dstat-label">Late</div>
+                </div>
+                <div class="att-dstat att-dstat-absent">
+                    <div class="att-dstat-num" id="dAbsent">0</div>
+                    <div class="att-dstat-label">Absent</div>
+                </div>
+                <div class="att-dstat att-dstat-total">
+                    <div class="att-dstat-num" id="dTotal">0</div>
+                    <div class="att-dstat-label">Recorded</div>
+                </div>
             </div>
-        </div>
 
-        <!-- Chart 3: Line — attendance rate over time -->
-        <div class="chart-card chart-card-wide">
-            <div class="chart-card-title">Attendance Rate Over Time</div>
-            <div class="chart-card-subtitle">Present + Late as % of total recorded per event</div>
-            <div class="chart-wrap">
-                <canvas id="chartLine"></canvas>
+            <!-- Attendance rate bar -->
+            <div class="att-detail-rate-wrap">
+                <div class="att-detail-rate-label">
+                    <span>Attendance Rate</span>
+                    <span id="dRate">—</span>
+                </div>
+                <div class="att-detail-rate-track">
+                    <div class="att-detail-rate-fill" id="dRateFill" style="width:0%"></div>
+                </div>
             </div>
+
+            <!-- Info row -->
+            <div class="att-detail-info-grid">
+                <div class="att-detail-info-item">
+                    <div class="att-detail-info-label">Event Type</div>
+                    <div class="att-detail-info-val" id="dType">—</div>
+                </div>
+                <div class="att-detail-info-item">
+                    <div class="att-detail-info-label">Location</div>
+                    <div class="att-detail-info-val" id="dLocation">—</div>
+                </div>
+                <div class="att-detail-info-item">
+                    <div class="att-detail-info-label">Expected</div>
+                    <div class="att-detail-info-val" id="dExpected">—</div>
+                </div>
+                <div class="att-detail-info-item">
+                    <div class="att-detail-info-label">Time</div>
+                    <div class="att-detail-info-val" id="dTime">—</div>
+                </div>
+            </div>
+
+            <!-- Action button -->
+            <div class="att-detail-actions">
+                <a href="#" id="dManageLink" class="btn-champs btn-primary-champs">
+                    📋 Manage Attendance →
+                </a>
+                <a href="#" id="dViewLink" class="btn-champs btn-secondary-champs">
+                    View Event
+                </a>
+            </div>
+
         </div>
 
-    </div>
-</div>
-{% endif %}
+    </div><!-- /.att-detail-panel -->
+
+</div><!-- /.att-split-layout -->
+
 
 <style>
-/* ── Charts section ─────────────────────────────── */
-.charts-section {
-    margin-top: 2rem;
-    background: var(--surface, #fff);
-    border: 1px solid var(--border, #e2e8f0);
-    border-radius: 14px;
-    padding: 1.5rem;
-}
-.charts-section-heading {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 1.25rem;
-    font-size: 20px;
-}
-.charts-grid {
+/* ── Split layout ─────────────────────────────────────────────── */
+.att-split-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 340px 1fr;
     gap: 1.25rem;
+    align-items: start;
+    min-height: calc(100vh - 140px);
 }
-.chart-card {
-    background: var(--surface-alt, #f8fafc);
-    border: 1px solid var(--border, #e2e8f0);
+@media (max-width: 860px) {
+    .att-split-layout { grid-template-columns: 1fr; }
+    .att-detail-panel { min-height: 320px; }
+}
+
+/* ── List panel ───────────────────────────────────────────────── */
+.att-list-panel {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e8eaf0);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.att-list-search-wrap {
+    position: relative;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border, #e8eaf0);
+}
+.att-event-search {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+    border: 1px solid var(--border, #e8eaf0);
+    border-radius: 8px;
+    font-size: 13px;
+    background: var(--surface, #f8fafc);
+    color: var(--text-main, #1e293b);
+    outline: none;
+    transition: border-color 0.18s;
+}
+.att-event-search:focus { border-color: var(--accent, #2563eb); }
+.att-search-icon {
+    position: absolute;
+    left: 1.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted, #94a3b8);
+    pointer-events: none;
+}
+.att-event-list {
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+/* ── Event list items ─────────────────────────────────────────── */
+.att-event-item {
+    padding: 0.85rem 1rem;
     border-radius: 10px;
-    padding: 1.1rem 1.25rem;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    background: var(--surface, #f8fafc);
 }
-.chart-card-wide { grid-column: 1 / -1; }
-.chart-card-title {
-    font-size: 14px;
+.att-event-item:hover {
+    background: var(--hover-bg, #f1f5f9);
+    border-color: var(--border, #e8eaf0);
+}
+.att-event-item.selected {
+    background: rgba(37,99,235,0.06);
+    border-color: var(--accent, #2563eb);
+}
+.att-event-item:focus { outline: 2px solid var(--accent, #2563eb); outline-offset: 2px; }
+.att-event-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.att-event-item-name {
+    font-size: 13.5px;
     font-weight: 600;
     color: var(--text-main, #1e293b);
-    margin-bottom: 2px;
+    line-height: 1.3;
 }
-.chart-card-subtitle {
+.att-event-item-meta {
     font-size: 12px;
     color: var(--text-muted, #94a3b8);
-    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 8px;
 }
-.chart-wrap { position: relative; height: 220px; }
-.chart-wrap-sm { height: 220px; }
-@media (max-width: 700px) {
-    .charts-grid { grid-template-columns: 1fr; }
-    .chart-card-wide { grid-column: auto; }
+.att-event-type-pill {
+    background: var(--border, #e8eaf0);
+    color: var(--text-muted, #64748b);
+    padding: 1px 7px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 500;
+}
+.att-mini-bar-wrap { margin-top: 4px; }
+.att-mini-bar {
+    height: 5px;
+    border-radius: 99px;
+    background: var(--border, #e8eaf0);
+    overflow: hidden;
+    display: flex;
+    margin-bottom: 4px;
+}
+.att-mini-segment { height: 100%; transition: width 0.3s; }
+.att-mini-present { background: #16a34a; }
+.att-mini-late    { background: #d97706; }
+.att-mini-absent  { background: #dc2626; }
+.att-mini-counts {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.att-mini-label  { font-size: 11px; color: var(--text-muted, #94a3b8); }
+.att-present-txt { color: #16a34a; font-weight: 600; }
+.att-late-txt    { color: #d97706; font-weight: 600; }
+.att-absent-txt  { color: #dc2626; font-weight: 600; }
+.att-mini-no-rec {
+    font-size: 11.5px;
+    color: var(--text-muted, #94a3b8);
+    font-style: italic;
+    margin-top: 4px;
+}
+.att-no-results {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-muted, #94a3b8);
+    font-size: 13px;
+}
+
+/* ── Detail panel ─────────────────────────────────────────────── */
+.att-detail-panel {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e8eaf0);
+    border-radius: 14px;
+    min-height: 420px;
+    position: sticky;
+    top: 80px;
+}
+.att-detail-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 420px;
+    gap: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+}
+.att-detail-empty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.5; }
+.att-detail-empty-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main, #1e293b);
+}
+.att-detail-empty-sub {
+    font-size: 13px;
+    color: var(--text-muted, #94a3b8);
+    max-width: 240px;
+}
+.att-detail-content { padding: 1.5rem; }
+.att-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border, #e8eaf0);
+}
+.att-detail-event-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main, #1e293b);
+    line-height: 1.3;
+}
+.att-detail-event-meta {
+    font-size: 13px;
+    color: var(--text-muted, #94a3b8);
+    margin-top: 3px;
+}
+
+/* ── Stat cards ───────────────────────────────────────────────── */
+.att-detail-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+@media (max-width: 600px) { .att-detail-stats { grid-template-columns: repeat(2, 1fr); } }
+.att-dstat {
+    border-radius: 10px;
+    padding: 0.85rem 0.75rem;
+    text-align: center;
+    border: 1px solid transparent;
+}
+.att-dstat-present { background: rgba(22,163,74,0.08);  border-color: rgba(22,163,74,0.2); }
+.att-dstat-late    { background: rgba(217,119,6,0.08);  border-color: rgba(217,119,6,0.2); }
+.att-dstat-absent  { background: rgba(220,38,38,0.08);  border-color: rgba(220,38,38,0.2); }
+.att-dstat-total   { background: rgba(37,99,235,0.07);  border-color: rgba(37,99,235,0.2); }
+.att-dstat-num {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.att-dstat-present .att-dstat-num { color: #16a34a; }
+.att-dstat-late    .att-dstat-num { color: #d97706; }
+.att-dstat-absent  .att-dstat-num { color: #dc2626; }
+.att-dstat-total   .att-dstat-num { color: #2563eb; }
+.att-dstat-label { font-size: 11px; color: var(--text-muted, #94a3b8); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* ── Rate bar ─────────────────────────────────────────────────── */
+.att-detail-rate-wrap { margin-bottom: 1.25rem; }
+.att-detail-rate-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--text-muted, #64748b);
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+.att-detail-rate-track {
+    height: 8px;
+    background: var(--border, #e8eaf0);
+    border-radius: 99px;
+    overflow: hidden;
+}
+.att-detail-rate-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #16a34a);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+}
+
+/* ── Info grid ────────────────────────────────────────────────── */
+.att-detail-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--surface, #f8fafc);
+    border-radius: 10px;
+    border: 1px solid var(--border, #e8eaf0);
+}
+.att-detail-info-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted, #94a3b8);
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+.att-detail-info-val {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-main, #1e293b);
+}
+
+/* ── Actions ──────────────────────────────────────────────────── */
+.att-detail-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 </style>
 
-<!-- Chart.js from CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
 <script>
-// ── Live search filter ────────────────────────────────────────
+// ── Event data from Jinja ──────────────────────────────────────
+const EVENT_DATA = {
+    {% for es in event_stats %}
+    "{{ es.event.event_id }}": {
+        id:       {{ es.event.event_id }},
+        name:     {{ es.event.event_name | tojson }},
+        type:     {{ es.event.event_type | tojson }},
+        date:     {{ es.event.event_date | safe_date | tojson }},
+        location: {{ (es.event.location or '—') | tojson }},
+        expected: {{ es.event.expected_attendance or 'null' }},
+        status:   {{ (es.event.status or '') | tojson }},
+        start:    {{ es.event.start_time | safe_time | tojson }},
+        end:      {{ es.event.end_time   | safe_time | tojson }},
+        present:  {{ es.present }},
+        late:     {{ es.late }},
+        absent:   {{ es.absent }},
+        total:    {{ es.total }},
+    },
+    {% endfor %}
+};
+
+function selectEvent(el) {
+    // Deselect all, select clicked
+    document.querySelectorAll('.att-event-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+
+    const eid = el.dataset.eventId;
+    const d   = EVENT_DATA[eid];
+    if (!d) return;
+
+    // Show detail content
+    document.getElementById('detailEmpty').style.display   = 'none';
+    document.getElementById('detailContent').style.display = '';
+
+    // Fill header
+    document.getElementById('dEventName').textContent = d.name;
+    document.getElementById('dEventMeta').textContent = d.date + (d.location !== '—' ? ' · ' + d.location : '');
+
+    const statusEl = document.getElementById('dEventStatus');
+    statusEl.textContent  = d.status || '—';
+    statusEl.className    = 'status-badge status-' + (d.status || '').toLowerCase();
+
+    // Stats
+    document.getElementById('dPresent').textContent = d.present;
+    document.getElementById('dLate').textContent    = d.late;
+    document.getElementById('dAbsent').textContent  = d.absent;
+    document.getElementById('dTotal').textContent   = d.total;
+
+    // Attendance rate
+    const rate = d.total > 0 ? (((d.present + d.late) / d.total) * 100).toFixed(1) : null;
+    document.getElementById('dRate').textContent     = rate !== null ? rate + '%' : '—';
+    document.getElementById('dRateFill').style.width = rate !== null ? rate + '%' : '0%';
+
+    // Info
+    document.getElementById('dType').textContent     = d.type;
+    document.getElementById('dLocation').textContent = d.location;
+    document.getElementById('dExpected').textContent = d.expected ? d.expected + ' expected' : '—';
+    document.getElementById('dTime').textContent     = d.start + ' – ' + d.end;
+
+    // Action links
+    document.getElementById('dManageLink').href = '/attendance/' + d.id;
+    document.getElementById('dViewLink').href   = '/events/' + d.id;
+}
+
+// ── Keyboard: enter/space to select ──────────────────────────
+document.querySelectorAll('.att-event-item').forEach(el => {
+    el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectEvent(el); }
+    });
+});
+
+// ── Live search filter ─────────────────────────────────────────
 const searchInput = document.getElementById('eventSearch');
 const noResults   = document.getElementById('noResults');
 if (searchInput) {
     searchInput.addEventListener('input', function () {
-        const q = this.value.trim().toLowerCase();
+        const q     = this.value.trim().toLowerCase();
         const items = document.querySelectorAll('.att-event-item');
         let visible = 0;
         items.forEach(item => {
@@ -323,163 +563,9 @@ if (searchInput) {
     });
 }
 
-// ── Chart data from Jinja ─────────────────────────────────────
-const eventData = [
-    {% for es in event_stats %}
-    {
-        label: {{ es.event.event_name | tojson }},
-        date:  {{ es.event.event_date | safe_date | tojson }},
-        present: {{ es.present }},
-        late:    {{ es.late }},
-        absent:  {{ es.absent }},
-        total:   {{ es.total }},
-    },
-    {% endfor %}
-].reverse(); // oldest → newest for timeline charts
-
-// ── Colour tokens ─────────────────────────────────────────────
-const C_PRESENT = 'rgba(22,163,74,0.85)';
-const C_LATE    = 'rgba(217,119,6,0.85)';
-const C_ABSENT  = 'rgba(220,38,38,0.85)';
-const C_PRESENT_B = 'rgba(22,163,74,1)';
-const C_LATE_B    = 'rgba(217,119,6,1)';
-const C_ABSENT_B  = 'rgba(220,38,38,1)';
-
-const labels = eventData.map(d => d.label.length > 22 ? d.label.slice(0,22)+'…' : d.label);
-
-const chartDefaults = {
-    font: { family: "'DM Sans', sans-serif", size: 12 },
-    color: '#64748b',
-};
-Chart.defaults.font.family = chartDefaults.font.family;
-Chart.defaults.font.size   = chartDefaults.font.size;
-Chart.defaults.color       = chartDefaults.color;
-
-// ── Chart 1: Stacked Bar ──────────────────────────────────────
-{% if event_stats %}
-new Chart(document.getElementById('chartStacked'), {
-    type: 'bar',
-    data: {
-        labels,
-        datasets: [
-            {
-                label: 'Present',
-                data: eventData.map(d => d.present),
-                backgroundColor: C_PRESENT,
-                borderColor: C_PRESENT_B,
-                borderWidth: 1,
-            },
-            {
-                label: 'Late',
-                data: eventData.map(d => d.late),
-                backgroundColor: C_LATE,
-                borderColor: C_LATE_B,
-                borderWidth: 1,
-            },
-            {
-                label: 'Absent',
-                data: eventData.map(d => d.absent),
-                backgroundColor: C_ABSENT,
-                borderColor: C_ABSENT_B,
-                borderWidth: 1,
-            },
-        ]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { position: 'top', labels: { boxWidth: 12, padding: 14 } },
-            tooltip: { mode: 'index', intersect: false },
-        },
-        scales: {
-            x: { stacked: true, grid: { display: false } },
-            y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } },
-        },
-    }
-});
-
-// ── Chart 2: Doughnut ─────────────────────────────────────────
-const totalPresent = eventData.reduce((s,d)=>s+d.present,0);
-const totalLate    = eventData.reduce((s,d)=>s+d.late,0);
-const totalAbsent  = eventData.reduce((s,d)=>s+d.absent,0);
-
-new Chart(document.getElementById('chartDoughnut'), {
-    type: 'doughnut',
-    data: {
-        labels: ['Present', 'Late', 'Absent'],
-        datasets: [{
-            data: [totalPresent, totalLate, totalAbsent],
-            backgroundColor: [C_PRESENT, C_LATE, C_ABSENT],
-            borderColor: ['#fff','#fff','#fff'],
-            borderWidth: 3,
-            hoverOffset: 6,
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '65%',
-        plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
-            tooltip: {
-                callbacks: {
-                    label: ctx => {
-                        const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
-                        const pct = total ? ((ctx.parsed / total)*100).toFixed(1) : 0;
-                        return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
-                    }
-                }
-            }
-        }
-    }
-});
-
-// ── Chart 3: Line — attendance rate % ────────────────────────
-const rateData = eventData.map(d => {
-    if (!d.total) return null;
-    return +(((d.present + d.late) / d.total) * 100).toFixed(1);
-});
-
-new Chart(document.getElementById('chartLine'), {
-    type: 'line',
-    data: {
-        labels,
-        datasets: [{
-            label: 'Attendance Rate (%)',
-            data: rateData,
-            borderColor: 'rgba(37,99,235,0.9)',
-            backgroundColor: 'rgba(37,99,235,0.08)',
-            pointBackgroundColor: 'rgba(37,99,235,1)',
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            tension: 0.35,
-            fill: true,
-            spanGaps: true,
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: ctx => ` ${ctx.parsed.y}% attendance rate`
-                }
-            }
-        },
-        scales: {
-            x: { grid: { display: false } },
-            y: {
-                beginAtZero: true,
-                max: 100,
-                ticks: { callback: v => v + '%' },
-            }
-        }
-    }
-});
-{% endif %}
+// Auto-select first event if any exist
+const firstItem = document.querySelector('.att-event-item');
+if (firstItem) selectEvent(firstItem);
 </script>
 
 {% endblock %}

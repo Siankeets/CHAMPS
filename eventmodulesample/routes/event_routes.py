@@ -194,6 +194,35 @@ def attendance_home():
     )
 
 
+# ── REPORTS ───────────────────────────────────────────────────────
+@event_bp.route('/reports')
+def reports():
+    all_events = Event.query.order_by(Event.event_date.asc()).all()
+    event_stats = []
+    for ev in all_events:
+        recs = Attendance.query.filter_by(event_id=ev.event_id).all()
+        event_stats.append({
+            'event':   ev,
+            'total':   len(recs),
+            'present': sum(1 for r in recs if r.attendance_status == 'Present'),
+            'late':    sum(1 for r in recs if r.attendance_status == 'Late'),
+            'absent':  sum(1 for r in recs if r.attendance_status == 'Absent'),
+        })
+
+    try:
+        from utils.forecasting import build_forecasts
+        forecasts = build_forecasts(event_stats)
+    except Exception:
+        forecasts = []
+
+    return render_template(
+        'events/reports.html',
+        event_stats=event_stats,
+        forecasts=forecasts,
+        active_page='reports',
+    )
+
+
 # ── ATTENDANCE: PER EVENT ─────────────────────────────────────────
 @event_bp.route('/attendance/<int:event_id>', methods=['GET', 'POST'])
 def attendance_event(event_id):

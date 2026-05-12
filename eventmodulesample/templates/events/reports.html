@@ -1,0 +1,527 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Reports</h1>
+        <p class="page-subtitle">Attendance analytics, trends, and ML-powered forecasts.</p>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 1 — Summary Stats Row
+═══════════════════════════════════════════════════════════════ -->
+{% set total_events   = event_stats | length %}
+{% set total_recorded = event_stats | sum(attribute='total') %}
+{% set total_present  = event_stats | sum(attribute='present') %}
+{% set total_late     = event_stats | sum(attribute='late') %}
+{% set total_absent   = event_stats | sum(attribute='absent') %}
+{% set overall_rate   = ((total_present + total_late) / total_recorded * 100) | round(1) if total_recorded > 0 else 0 %}
+
+<div class="rpt-summary-row">
+    <div class="rpt-summary-card">
+        <div class="rpt-summary-icon">📅</div>
+        <div class="rpt-summary-num">{{ total_events }}</div>
+        <div class="rpt-summary-label">Total Events</div>
+    </div>
+    <div class="rpt-summary-card">
+        <div class="rpt-summary-icon">📋</div>
+        <div class="rpt-summary-num">{{ total_recorded }}</div>
+        <div class="rpt-summary-label">Records Total</div>
+    </div>
+    <div class="rpt-summary-card rpt-summary-card--present">
+        <div class="rpt-summary-icon">✅</div>
+        <div class="rpt-summary-num">{{ total_present }}</div>
+        <div class="rpt-summary-label">Total Present</div>
+    </div>
+    <div class="rpt-summary-card rpt-summary-card--late">
+        <div class="rpt-summary-icon">⏰</div>
+        <div class="rpt-summary-num">{{ total_late }}</div>
+        <div class="rpt-summary-label">Total Late</div>
+    </div>
+    <div class="rpt-summary-card rpt-summary-card--absent">
+        <div class="rpt-summary-icon">❌</div>
+        <div class="rpt-summary-num">{{ total_absent }}</div>
+        <div class="rpt-summary-label">Total Absent</div>
+    </div>
+    <div class="rpt-summary-card rpt-summary-card--rate">
+        <div class="rpt-summary-icon">📈</div>
+        <div class="rpt-summary-num">{{ overall_rate }}%</div>
+        <div class="rpt-summary-label">Overall Rate</div>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 2 — Charts
+═══════════════════════════════════════════════════════════════ -->
+<div class="rpt-section-title">Visualizations</div>
+
+<div class="rpt-charts-grid">
+
+    <!-- Chart 1: Stacked Bar — per event breakdown -->
+    <div class="rpt-chart-card rpt-chart-wide">
+        <div class="rpt-chart-title">Attendance Breakdown per Event</div>
+        <div class="rpt-chart-sub">Present / Late / Absent stacked per event occurrence</div>
+        <div class="rpt-chart-wrap">
+            <canvas id="chartStacked"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 2: Doughnut — overall totals -->
+    <div class="rpt-chart-card">
+        <div class="rpt-chart-title">Overall Distribution</div>
+        <div class="rpt-chart-sub">Combined totals across all events</div>
+        <div class="rpt-chart-wrap rpt-chart-wrap-sm">
+            <canvas id="chartDoughnut"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 3: Line — attendance rate over time -->
+    <div class="rpt-chart-card">
+        <div class="rpt-chart-title">Attendance Rate Over Time</div>
+        <div class="rpt-chart-sub">% of attendees who showed up (Present + Late)</div>
+        <div class="rpt-chart-wrap rpt-chart-wrap-sm">
+            <canvas id="chartLine"></canvas>
+        </div>
+    </div>
+
+</div><!-- /.rpt-charts-grid -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 3 — ML Forecasts (ARIMA)
+═══════════════════════════════════════════════════════════════ -->
+<div class="rpt-section-title" style="margin-top:2.5rem;">ML Attendance Forecasts <span class="rpt-arima-badge">ARIMA</span></div>
+
+{% if forecasts %}
+<div class="rpt-forecast-grid">
+    {% for fc in forecasts %}
+    <div class="forecast-card">
+        <div class="fc-type-label">{{ fc.event_type }}</div>
+        <div class="fc-headline">
+            {% if fc.predicted is not none %}
+                <span class="fc-predicted-num">{{ fc.predicted }}</span>
+                <span class="fc-predicted-label">predicted attendees</span>
+                {% if fc.trend == 'up' %}
+                    <span class="fc-trend fc-trend-up">▲ Trending up</span>
+                {% elif fc.trend == 'down' %}
+                    <span class="fc-trend fc-trend-down">▼ Trending down</span>
+                {% elif fc.trend == 'stable' %}
+                    <span class="fc-trend fc-trend-stable">→ Stable</span>
+                {% else %}
+                    <span class="fc-trend fc-trend-new">✦ First forecast</span>
+                {% endif %}
+            {% else %}
+                <span class="fc-no-data">Not enough data to forecast</span>
+            {% endif %}
+        </div>
+
+        {% if fc.history | length > 1 %}
+        <div class="fc-sparkline" title="Historical headcounts (oldest → newest)">
+            {% set max_h = fc.history | max %}
+            {% for val in fc.history %}
+                <div class="fc-spark-bar"
+                     style="height: {{ ((val / max_h) * 48) | int if max_h > 0 else 4 }}px;"
+                     title="{{ val }}">
+                </div>
+            {% endfor %}
+            {% if fc.predicted is not none %}
+            <div class="fc-spark-bar fc-spark-forecast"
+                 style="height: {{ ((fc.predicted / max_h) * 48) | int if max_h > 0 else 4 }}px;"
+                 title="Forecast: {{ fc.predicted }}">
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="fc-stats-row">
+            <div class="fc-stat">
+                <div class="fc-stat-val">{{ fc.occurrences }}</div>
+                <div class="fc-stat-label">occurrences</div>
+            </div>
+            <div class="fc-stat">
+                <div class="fc-stat-val">{{ fc.avg_attendance }}</div>
+                <div class="fc-stat-label">avg. showed up</div>
+            </div>
+            <div class="fc-stat">
+                <div class="fc-stat-val">{{ fc.avg_absent }}</div>
+                <div class="fc-stat-label">avg. absent</div>
+            </div>
+            <div class="fc-stat">
+                <div class="fc-stat-val">
+                    <span class="fc-confidence fc-conf-{{ fc.confidence | lower }}">
+                        {{ fc.confidence }}
+                    </span>
+                </div>
+                <div class="fc-stat-label">confidence</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<p class="fc-footnote" style="margin-top:1rem;">
+    Forecasts use ARIMA(1,1,1) trained on Present + Late headcount per event type. Absent records are excluded.
+    Confidence: High ≥ 5 occurrences, Medium ≥ 3, Low &lt; 3.
+</p>
+
+{% else %}
+<div class="fc-empty">
+    <div class="fc-empty-icon">📊</div>
+    <div class="fc-empty-text">No forecast data yet.</div>
+    <div class="fc-empty-sub">Record attendance for at least 2 events of the same type to generate a forecast.</div>
+</div>
+{% endif %}
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 4 — Per-Category Summary
+═══════════════════════════════════════════════════════════════ -->
+<div class="rpt-section-title" style="margin-top:2.5rem;">Category Summaries</div>
+
+{% set types = event_stats | map(attribute='event') | map(attribute='event_type') | unique | list %}
+
+{% if types %}
+<div class="rpt-cat-grid">
+    {% for etype in types %}
+    {% set cat_events = event_stats | selectattr('event.event_type', 'equalto', etype) | list %}
+    {% set cat_present = cat_events | sum(attribute='present') %}
+    {% set cat_late    = cat_events | sum(attribute='late') %}
+    {% set cat_absent  = cat_events | sum(attribute='absent') %}
+    {% set cat_total   = cat_events | sum(attribute='total') %}
+    {% set cat_rate    = ((cat_present + cat_late) / cat_total * 100) | round(1) if cat_total > 0 else 0 %}
+
+    <div class="rpt-cat-card">
+        <div class="rpt-cat-header">
+            <div class="rpt-cat-name">{{ etype }}</div>
+            <div class="rpt-cat-events-count">{{ cat_events | length }} event{{ 's' if cat_events | length != 1 else '' }}</div>
+        </div>
+
+        <div class="rpt-cat-rate-wrap">
+            <div class="rpt-cat-rate-label">
+                <span>Attendance Rate</span>
+                <strong>{{ cat_rate }}%</strong>
+            </div>
+            <div class="rpt-cat-rate-track">
+                <div class="rpt-cat-rate-fill" style="width:{{ cat_rate }}%"></div>
+            </div>
+        </div>
+
+        <div class="rpt-cat-stats">
+            <div class="rpt-cat-stat">
+                <div class="rpt-cat-stat-num" style="color:#16a34a;">{{ cat_present }}</div>
+                <div class="rpt-cat-stat-lbl">Present</div>
+            </div>
+            <div class="rpt-cat-stat">
+                <div class="rpt-cat-stat-num" style="color:#d97706;">{{ cat_late }}</div>
+                <div class="rpt-cat-stat-lbl">Late</div>
+            </div>
+            <div class="rpt-cat-stat">
+                <div class="rpt-cat-stat-num" style="color:#dc2626;">{{ cat_absent }}</div>
+                <div class="rpt-cat-stat-lbl">Absent</div>
+            </div>
+            <div class="rpt-cat-stat">
+                <div class="rpt-cat-stat-num" style="color:#2563eb;">{{ cat_total }}</div>
+                <div class="rpt-cat-stat-lbl">Total</div>
+            </div>
+        </div>
+
+        <div class="rpt-cat-summary-text">
+            {% if cat_rate >= 80 %}
+                <span class="rpt-cat-verdict rpt-cat-verdict--good">Strong attendance</span> — this event type consistently pulls good numbers.
+            {% elif cat_rate >= 50 %}
+                <span class="rpt-cat-verdict rpt-cat-verdict--ok">Moderate attendance</span> — about half of recorded members show up.
+            {% else %}
+                <span class="rpt-cat-verdict rpt-cat-verdict--low">Low attendance</span> — consider reviewing scheduling or engagement for this type.
+            {% endif %}
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="fc-empty">
+    <div class="fc-empty-icon">📂</div>
+    <div class="fc-empty-text">No categories to summarize yet.</div>
+</div>
+{% endif %}
+
+
+<!-- ── Page styles ─────────────────────────────────────────────── -->
+<style>
+
+/* ── Summary row ──────────────────────────────────────────────── */
+.rpt-summary-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+@media (max-width: 900px)  { .rpt-summary-row { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 500px)  { .rpt-summary-row { grid-template-columns: repeat(2, 1fr); } }
+
+.rpt-summary-card {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e8eaf0);
+    border-radius: 12px;
+    padding: 1rem 0.875rem;
+    text-align: center;
+    transition: box-shadow 0.18s;
+}
+.rpt-summary-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+.rpt-summary-icon  { font-size: 1.4rem; margin-bottom: 6px; }
+.rpt-summary-num   { font-size: 22px; font-weight: 700; color: var(--text-main, #1e293b); line-height: 1; margin-bottom: 4px; }
+.rpt-summary-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted, #94a3b8); font-weight: 500; }
+
+.rpt-summary-card--present { border-color: rgba(22,163,74,0.25);  background: rgba(22,163,74,0.04); }
+.rpt-summary-card--late    { border-color: rgba(217,119,6,0.25);  background: rgba(217,119,6,0.04); }
+.rpt-summary-card--absent  { border-color: rgba(220,38,38,0.25);  background: rgba(220,38,38,0.04); }
+.rpt-summary-card--rate    { border-color: rgba(37,99,235,0.25);  background: rgba(37,99,235,0.04); }
+
+/* ── Section titles ───────────────────────────────────────────── */
+.rpt-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted, #94a3b8);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border, #e8eaf0);
+}
+.rpt-arima-badge {
+    display: inline-block;
+    background: rgba(37,99,235,0.1);
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 99px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.06em;
+}
+
+/* ── Charts grid ──────────────────────────────────────────────── */
+.rpt-charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+@media (max-width: 700px) { .rpt-charts-grid { grid-template-columns: 1fr; } }
+.rpt-chart-wide { grid-column: 1 / -1; }
+
+.rpt-chart-card {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e8eaf0);
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+}
+.rpt-chart-title { font-size: 14px; font-weight: 600; color: var(--text-main, #1e293b); margin-bottom: 2px; }
+.rpt-chart-sub   { font-size: 12px; color: var(--text-muted, #94a3b8); margin-bottom: 1rem; }
+.rpt-chart-wrap    { position: relative; height: 240px; }
+.rpt-chart-wrap-sm { position: relative; height: 220px; }
+
+/* ── Forecast grid ────────────────────────────────────────────── */
+.rpt-forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+/* ── Category summary grid ────────────────────────────────────── */
+.rpt-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+.rpt-cat-card {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e8eaf0);
+    border-radius: 14px;
+    padding: 1.25rem;
+}
+.rpt-cat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.85rem;
+}
+.rpt-cat-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main, #1e293b);
+}
+.rpt-cat-events-count {
+    font-size: 12px;
+    color: var(--text-muted, #94a3b8);
+}
+.rpt-cat-rate-wrap { margin-bottom: 0.85rem; }
+.rpt-cat-rate-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted, #64748b);
+    margin-bottom: 5px;
+}
+.rpt-cat-rate-track {
+    height: 7px;
+    background: var(--border, #e8eaf0);
+    border-radius: 99px;
+    overflow: hidden;
+}
+.rpt-cat-rate-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb, #16a34a);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+}
+.rpt-cat-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+    text-align: center;
+}
+.rpt-cat-stat-num { font-size: 18px; font-weight: 700; line-height: 1; }
+.rpt-cat-stat-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted, #94a3b8); margin-top: 2px; }
+.rpt-cat-summary-text {
+    font-size: 12.5px;
+    color: var(--text-muted, #64748b);
+    line-height: 1.5;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border, #e8eaf0);
+}
+.rpt-cat-verdict {
+    font-weight: 700;
+    font-size: 12.5px;
+}
+.rpt-cat-verdict--good { color: #16a34a; }
+.rpt-cat-verdict--ok   { color: #d97706; }
+.rpt-cat-verdict--low  { color: #dc2626; }
+</style>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+const eventData = [
+    {% for es in event_stats %}
+    {
+        label:   {{ es.event.event_name | tojson }},
+        present: {{ es.present }},
+        late:    {{ es.late }},
+        absent:  {{ es.absent }},
+        total:   {{ es.total }},
+    },
+    {% endfor %}
+].reverse(); // oldest → newest
+
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size   = 12;
+Chart.defaults.color       = '#64748b';
+
+const C_PRESENT = 'rgba(22,163,74,0.85)';
+const C_LATE    = 'rgba(217,119,6,0.85)';
+const C_ABSENT  = 'rgba(220,38,38,0.85)';
+const labels    = eventData.map(d => d.label.length > 20 ? d.label.slice(0,20)+'…' : d.label);
+
+{% if event_stats %}
+
+// ── Chart 1: Stacked Bar ──────────────────────────────────────
+new Chart(document.getElementById('chartStacked'), {
+    type: 'bar',
+    data: {
+        labels,
+        datasets: [
+            { label: 'Present', data: eventData.map(d=>d.present), backgroundColor: C_PRESENT, borderColor: 'rgba(22,163,74,1)',   borderWidth: 1 },
+            { label: 'Late',    data: eventData.map(d=>d.late),    backgroundColor: C_LATE,    borderColor: 'rgba(217,119,6,1)',    borderWidth: 1 },
+            { label: 'Absent',  data: eventData.map(d=>d.absent),  backgroundColor: C_ABSENT,  borderColor: 'rgba(220,38,38,1)',    borderWidth: 1 },
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'top', labels: { boxWidth: 12, padding: 14 } },
+            tooltip: { mode: 'index', intersect: false },
+        },
+        scales: {
+            x: { stacked: true, grid: { display: false } },
+            y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } },
+        }
+    }
+});
+
+// ── Chart 2: Doughnut ─────────────────────────────────────────
+const totalPresent = eventData.reduce((s,d)=>s+d.present,0);
+const totalLate    = eventData.reduce((s,d)=>s+d.late,0);
+const totalAbsent  = eventData.reduce((s,d)=>s+d.absent,0);
+
+new Chart(document.getElementById('chartDoughnut'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Present','Late','Absent'],
+        datasets: [{
+            data: [totalPresent, totalLate, totalAbsent],
+            backgroundColor: [C_PRESENT, C_LATE, C_ABSENT],
+            borderColor: ['#fff','#fff','#fff'],
+            borderWidth: 3, hoverOffset: 6,
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false, cutout: '65%',
+        plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                        const pct   = total ? ((ctx.parsed/total)*100).toFixed(1) : 0;
+                        return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+// ── Chart 3: Line — attendance rate % ─────────────────────────
+const rateData = eventData.map(d => {
+    if (!d.total) return null;
+    return +(((d.present + d.late) / d.total) * 100).toFixed(1);
+});
+
+new Chart(document.getElementById('chartLine'), {
+    type: 'line',
+    data: {
+        labels,
+        datasets: [{
+            label: 'Attendance Rate (%)',
+            data: rateData,
+            borderColor: 'rgba(37,99,235,0.9)',
+            backgroundColor: 'rgba(37,99,235,0.08)',
+            pointBackgroundColor: 'rgba(37,99,235,1)',
+            pointRadius: 5, pointHoverRadius: 7,
+            tension: 0.35, fill: true, spanGaps: true,
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}% attendance rate` } }
+        },
+        scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, max: 100, ticks: { callback: v => v+'%' } }
+        }
+    }
+});
+
+{% endif %}
+</script>
+
+{% endblock %}
