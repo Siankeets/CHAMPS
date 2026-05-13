@@ -1,0 +1,33 @@
+CREATE TABLE roles (
+    role_id INT AUTO_INCREMENT PRIMARY KEY,
+    role_name VARCHAR(100) NOT NULL UNIQUE,
+    role_level INT NOT NULL,
+    access_level VARCHAR(50)
+);
+
+THESE TWO TOGETHER FOR SMOOTHER MANAGEMENT OF ROLES.
+
+CREATE TABLE role_transitions (
+    from_role_id INT NOT NULL,
+    to_role_id INT NOT NULL,
+
+    PRIMARY KEY (from_role_id, to_role_id),
+
+    FOREIGN KEY (from_role_id) REFERENCES roles(role_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    FOREIGN KEY (to_role_id) REFERENCES roles(role_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+===========================================================
+
+INSERT INTO roles (role_name, role_level, access_level) VALUES
+('Basic', 10, 'low'),
+('Member', 20, 'basic'),
+('Assistant Group Leader', 30, 'mid'),
+('Group Leader', 40, 'mid'),
+('Chapter Head', 50, 'high'),
+('Regional Director', 60, 'admin');

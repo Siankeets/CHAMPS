@@ -1,0 +1,44 @@
+CREATE TABLE REGION (
+	region_id INT AUTO_INCREMENT PRIMARY KEY,
+	region_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE chapters (
+    chapter_id INT AUTO_INCREMENT PRIMARY KEY,
+    chapter_name VARCHAR(100) NOT NULL,
+    region_id INT NULL,
+
+    FOREIGN KEY (region_id) REFERENCES region(region_id)
+    ON DELETE SET NULL /* SET region ID as NULLABLE FOR THIS TO WORK*/
+    ON UPDATE CASCADE    
+/* On Delete and On Update for proper links, on region deletion the chapters stay. 
+On Update keeps foreign keys in link/sync together with referenced table*/
+);
+
+=====
+AFTER MEMBERS TABLE CREATION, UPDATE/ALTER TABLE REGIONS AND CHAPTERS FOR REGION DIRECTOR AND CHAPTER HEADS
+=====
+
+CREATE TABLE group_unit (
+    group_id INT PRIMARY KEY AUTO_INCREMENT,
+    group_name VARCHAR(100) NOT NULL,
+    group_function VARCHAR(100) NOT NULL,
+    chapter_id INT NULL
+    
+    FOREIGN KEY (chapter_id) REFERENCES chapters(chapter_id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE member_groups (
+    member_id INT,
+    group_id INT,
+
+    PRIMARY KEY (member_id, group_id),
+
+    FOREIGN KEY (member_id) REFERENCES members(member_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (group_id) REFERENCES group_unit(group_id)
+        ON DELETE CASCADE
+);
