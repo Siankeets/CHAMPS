@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Code | BCBP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='forgot_password.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+        <div>
+            <h2>BCBP</h2>
+            <span>Faith • Leadership • Service</span>
+        </div>
+    </div>
+
+    <a href="/" class="back-home">← Back to Home</a>
+</nav>
+
+<section class="login-wrapper">
+    <div class="forgot-container">
+
+        <div class="forgot-card">
+
+            <div class="login-logo">
+                <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            </div>
+
+            <h1>Verify Code</h1>
+
+            <p class="subtitle">
+                Enter the 6-digit verification code sent to your registered mobile number.
+            </p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-message">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form action="/verify_code" method="POST">
+
+                <div class="input-group">
+                    <input
+                        type="text"
+                        name="otp"
+                        maxlength="6"
+                        placeholder="Enter 6-digit code"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="reset-btn">
+                    Verify Code
+                </button>
+
+            </form>
+
+            <div class="resend-section">
+                <p>
+                    Didn't receive the code? Go back and request a new verification code.
+                </p>
+            </div>
+
+            <div class="back-login">
+                <a href="/forgot_password">← Back</a>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    <div class="footer-bottom">
+         © 2026 The Brotherhood of Christian Businessmen and Professionals. All Rights Reserved.
+    </div>
+</footer>
+
+</body>
+</html>
