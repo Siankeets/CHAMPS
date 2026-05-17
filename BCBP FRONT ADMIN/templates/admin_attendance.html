@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCBP Admin | Attendance Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .attendance-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 22px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-row select, .filter-row input {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #0d2f5f;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 15px; border-bottom: 2px solid #d4af37; color: #0d2f5f; font-size: 14px; }
+        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; color: #333; }
+
+        .analytics-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .high-participation { background: #dcfce7; color: #16a34a; }
+        .low-participation { background: #fee2e2; color: #dc2626; }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Logo">
+            <div>
+                <h2>BCBP ADMIN</h2>
+                <span>Attendance Monitoring System</span>
+            </div>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Admin">
+            <h3>Admin Panel</h3>
+            <p>Attendance & Analytics</p>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/members">Members</a>
+            <a href="/admin/events">Events</a>
+            <a href="/admin/attendance" class="active">Attendance</a>
+            <a href="/admin/learning-materials">Learning Materials</a>
+            <a href="/admin/reports">Reports</a>
+            <a href="/admin/notifications">Notifications</a>
+            <a href="/admin/ai-helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <section class="welcome-banner">
+            <h1>Attendance & Participation</h1>
+            <p>Track all member attendance logs and analyze participation patterns across all events.</p>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Today's Attendance</h3>
+                <p class="big-number">82</p>
+                <span>Members Present</span>
+            </div>
+            <div class="stat-card">
+                <h3>Avg. Participation</h3>
+                <p class="big-number">74%</p>
+                <span>Monthly Rate</span>
+            </div>
+            <div class="stat-card">
+                <h3>Most Active Event</h3>
+                <p class="big-number" style="font-size: 1.5rem;">Grand Breakfast</p>
+                <span>92% Attendance</span>
+            </div>
+        </section>
+
+        <div class="attendance-container">
+            <div class="glass-card">
+                <div class="filter-row">
+                    <h3 style="color: #0d2f5f; flex-grow: 1;">Attendance Logs</h3>
+                    <select name="event-filter">
+                        <option value="all">All Events</option>
+                        <option value="breakfast">Grand Breakfast</option>
+                        <option value="summit">Leadership Summit</option>
+                    </select>
+                    <input type="date">
+                    <button class="logout-btn" style="border:none; cursor:pointer; padding: 10px 20px;">Export Report</button>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Time-In</th>
+                            <th>Engagement Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Juan Dela Cruz</strong></td>
+                            <td>Grand Breakfast</td>
+                            <td>May 14, 2026</td>
+                            <td>07:15 AM</td>
+                            <td><span class="analytics-pill high-participation">Regular</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Maria Santos</strong></td>
+                            <td>Leadership Summit</td>
+                            <td>May 10, 2026</td>
+                            <td>08:45 AM</td>
+                            <td><span class="analytics-pill high-participation">Regular</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pedro Penduko</strong></td>
+                            <td>Grand Breakfast</td>
+                            <td>May 14, 2026</td>
+                            <td>07:30 AM</td>
+                            <td><span class="analytics-pill low-participation">At Risk</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("hide");
+    }
+</script>
+</body>
+</html>

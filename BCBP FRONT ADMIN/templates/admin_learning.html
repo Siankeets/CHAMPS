@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCBP Admin | Learning Module Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* All-in-one grid layout */
+        .learning-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1100px) {
+            .learning-grid { grid-template-columns: 1fr; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 22px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Form Styling */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #0d2f5f; font-weight: 600; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd;
+            background: white; font-family: inherit;
+        }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 15px; border-bottom: 2px solid #d4af37; color: #0d2f5f; }
+        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; color: #333; }
+
+        .usage-badge {
+            background: #e0f2fe; color: #0369a1;
+            padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Logo">
+            <div>
+                <h2>BCBP ADMIN</h2>
+                <span>Learning Management System</span>
+            </div>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Admin">
+            <h3>Admin Panel</h3>
+            <p>Content & Resources</p>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/members">Members</a>
+            <a href="/admin/events">Events</a>
+            <a href="/admin/attendance">Attendance</a>
+            <a href="/admin/learning-materials" class="active">Learning Materials</a>
+            <a href="/admin/reports">Reports</a>
+            <a href="/admin/notifications">Notifications</a>
+            <a href="/admin/ai-helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <section class="welcome-banner">
+            <h1>Module Management</h1>
+            <p>Directly upload new spiritual materials and manage existing resources in one place.</p>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Modules</h3>
+                <p class="big-number">42</p>
+                <span>Live Resources</span>
+            </div>
+            <div class="stat-card">
+                <h3>Popular Content</h3>
+                <p class="big-number" style="font-size: 1.2rem;">Christian Ethics</p>
+                <span>850 Views</span>
+            </div>
+            <div class="stat-card">
+                <h3>Storage Used</h3>
+                <p class="big-number">1.2 GB</p>
+                <span>Out of 5 GB</span>
+            </div>
+        </section>
+
+        <div class="learning-grid">
+            
+            <div class="glass-card">
+                <h3 style="color: #0d2f5f; margin-bottom: 20px;"><i class="fa-solid fa-cloud-arrow-up"></i> Upload New Module</h3>
+                <form action="/admin/upload-module" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Module Title</label>
+                        <input type="text" placeholder="e.g. BCBP Way of Life" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select>
+                            <option>Spiritual Growth</option>
+                            <option>Leadership Development</option>
+                            <option>Business Ethics</option>
+                            <option>Community Service</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Short Description</label>
+                        <textarea rows="3" placeholder="Briefly describe the content..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Select File (PDF, MP4, or Docs)</label>
+                        <input type="file" required>
+                    </div>
+                    <button type="submit" class="logout-btn" style="width: 100%; border:none; cursor:pointer; margin-top:10px;">
+                        Confirm Upload
+                    </button>
+                </form>
+            </div>
+
+            <div class="glass-card">
+                <h3 style="color: #0d2f5f; margin-bottom: 20px;"><i class="fa-solid fa-folder-open"></i> Existing Modules</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Module Title</th>
+                            <th>Category</th>
+                            <th>Usage</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Ethics in Marketplace</strong><br><small>Uploaded: May 10, 2026</small></td>
+                            <td>Business Ethics</td>
+                            <td><span class="usage-badge"><i class="fa-solid fa-eye"></i> 1,240</span></td>
+                            <td>
+                                <button title="Edit" style="border:none; background:none; cursor:pointer; color:#0d2f5f;"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button title="Delete" style="border:none; background:none; cursor:pointer; color:#e74c3c; margin-left:10px;"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lead Like Jesus</strong><br><small>Uploaded: May 05, 2026</small></td>
+                            <td>Leadership</td>
+                            <td><span class="usage-badge"><i class="fa-solid fa-eye"></i> 856</span></td>
+                            <td>
+                                <button title="Edit" style="border:none; background:none; cursor:pointer; color:#0d2f5f;"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button title="Delete" style="border:none; background:none; cursor:pointer; color:#e74c3c; margin-left:10px;"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("hide");
+    }
+</script>
+</body>
+</html>

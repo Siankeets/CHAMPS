@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCBP Admin | Member Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Admin-specific Table Styling */
+        .member-table-container {
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(10px);
+            padding: 28px;
+            border-radius: 18px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #0d2f5f;
+        }
+        th {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid #d4af37;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e8edf5;
+            font-size: 14px;
+        }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .newcomer { background: #e3f2fd; color: #1976d2; }
+        .veteran { background: #fff8e1; color: #fbc02d; }
+        .cluster-1 { border-left: 4px solid #4caf50; }
+        .cluster-2 { border-left: 4px solid #2196f3; }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Logo">
+            <div>
+                <h2>BCBP ADMIN</h2>
+                <span>Member Management & Intelligence</span>
+            </div>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Admin">
+            <h3>Admin Panel</h3>
+            <p>Data & Insights</p>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/members" class="active">Members</a>
+            <a href="/admin/events">Events</a>
+            <a href="/admin/attendance">Attendance</a>
+            <a href="/admin/learning-materials">Learning Materials</a>
+            <a href="/admin/reports">Reports</a>
+            <a href="/admin/notifications">Notifications</a>
+            <a href="/admin/ai-helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <section class="welcome-banner">
+            <h1>Member Intelligence</h1>
+            <p>View behavioral tracking, automated segmentation, and AI clustering results (K-Means).</p>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>K-Means Clustering</h3>
+                <p class="big-number">3</p>
+                <span>Active Segments Found</span>
+            </div>
+            <div class="stat-card">
+                <h3>Behavior Tracking</h3>
+                <p class="big-number">Active</p>
+                <span>Monitoring Engagement</span>
+            </div>
+            <div class="stat-card">
+                <h3>Newcomers</h3>
+                <p class="big-number">124</p>
+                <span>Last 30 Days</span>
+            </div>
+            <div class="stat-card">
+                <h3>Veteran Ratio</h3>
+                <p class="big-number">72%</p>
+                <span>Retention Rate</span>
+            </div>
+        </section>
+
+        <div class="member-table-container">
+            <h2>All Users & AI Segmentation</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Segment</th>
+                        <th>Behavior Score</th>
+                        <th>K-Means Cluster</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="cluster-1">
+                        <td><strong>Juan Dela Cruz</strong></td>
+                        <td><span class="badge veteran">Veteran</span></td>
+                        <td>98% (High Activity)</td>
+                        <td>Cluster A (Leaders)</td>
+                        <td><button class="logout-btn" style="padding: 5px 10px; font-size: 10px;">View</button></td>
+                    </tr>
+                    <tr class="cluster-2">
+                        <td><strong>Maria Santos</strong></td>
+                        <td><span class="badge newcomer">Newcomer</span></td>
+                        <td>45% (Developing)</td>
+                        <td>Cluster B (Onboarding)</td>
+                        <td><button class="logout-btn" style="padding: 5px 10px; font-size: 10px;">View</button></td>
+                    </tr>
+                    </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("hide");
+    }
+</script>
+</body>
+</html>

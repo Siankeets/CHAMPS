@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCBP | Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Karagdagang admin-specific styling na hindi sisira sa main CSS */
+        .analytics-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .mock-chart {
+            width: 100%;
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #0d2f5f, #d4af37);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+        }
+
+        .bar::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #0d2f5f;
+            font-weight: 600;
+        }
+
+        /* Pag-overrule sa ilang layout para sa Admin view */
+        .dashboard-content {
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="BCBP Logo">
+            <div>
+                <h2>BCBP ADMIN</h2>
+                <span>Faith • Leadership • Service</span>
+            </div>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Admin Profile">
+            <h3>System Admin</h3>
+            <p>Chapter Administrator</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard" class="active">Dashboard</a>
+            <a href="/admin/members">Members</a>
+            <a href="/admin/events">Events</a>
+            <a href="/admin/attendance">Attendance</a>
+            <a href="/admin/learning-materials">Learning Materials</a>
+            <a href="/admin/reports">Reports</a>
+            <a href="/admin/notifications">Notifications</a>
+            <a href="/admin/ai-helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <section class="welcome-banner">
+            <h1>Admin Overview</h1>
+            <p>
+                Monitoring Chapter performance and engagement analytics. 
+                Keep track of member growth and upcoming activities here.
+            </p>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Members</h3>
+                <p class="big-number">1,248</p>
+                <span>↑ 12% increase</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Engagement Rate</h3>
+                <p class="big-number">84%</p>
+                <span>Active participation</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Participation</h3>
+                <p class="big-number">952</p>
+                <span>Avg per event</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Completion</h3>
+                <p class="big-number">68%</p>
+                <span>Spiritual Formation</span>
+            </div>
+        </section>
+
+        <section class="dashboard-lower">
+            <div class="calendar-card">
+                <h2>Member Growth Trend</h2>
+                <div class="mock-chart">
+                    <div class="bar" style="height: 40%;" data-label="Jan"></div>
+                    <div class="bar" style="height: 55%;" data-label="Feb"></div>
+                    <div class="bar" style="height: 45%;" data-label="Mar"></div>
+                    <div class="bar" style="height: 70%;" data-label="Apr"></div>
+                    <div class="bar" style="height: 85%;" data-label="May"></div>
+                    <div class="bar" style="height: 100%;" data-label="Jun"></div>
+                </div>
+            </div>
+
+            <div class="calendar-card">
+                <h2>Upcoming Events</h2>
+                <ul>
+                    <li><strong>July 20</strong> Leadership Summit 2026</li>
+                    <li><strong>July 25</strong> National Breakfast</li>
+                    <li><strong>Aug 02</strong> Outreach Program</li>
+                </ul>
+                <button class="logout-btn" style="width: 100%; margin-top: 15px; border: none; cursor: pointer;">Add Event</button>
+            </div>
+        </section>
+    </main>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("hide");
+}
+</script>
+
+</body>
+</html>

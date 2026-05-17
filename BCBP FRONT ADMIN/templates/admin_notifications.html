@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCBP Admin | Notifications Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Admin Notification Form Styling */
+        .form-container {
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 22px;
+            box-shadow: 0 10px 25px rgba(13,47,95,0.08);
+            margin-bottom: 30px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #0d2f5f; font-weight: 600; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e0e6ed; background: white;
+        }
+        .notif-history {
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 22px;
+        }
+        .notif-item {
+            padding: 15px; border-bottom: 1px solid #e8edf5; display: flex; justify-content: space-between; align-items: center;
+        }
+        .type-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .alert { background: #fee2e2; color: #dc2626; }
+        .announcement { background: #dcfce7; color: #16a34a; }
+        .push { background: #dbeafe; color: #2563eb; }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Logo">
+            <div>
+                <h2>BCBP ADMIN</h2>
+                <span>System Notifications Manager</span>
+            </div>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Admin">
+            <h3>Admin Panel</h3>
+            <p>System Broadcast</p>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/members">Members</a>
+            <a href="/admin/events">Events</a>
+            <a href="/admin/attendance">Attendance</a>
+            <a href="/admin/learning-materials">Learning Materials</a>
+            <a href="/admin/reports">Reports</a>
+            <a href="/admin/notifications" class="active">Notifications</a>
+            <a href="/admin/ai-helpdesk">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <section class="welcome-banner">
+            <h1>Broadcast Center</h1>
+            <p>Send announcements, alerts, and push notifications to all BCBP members instantly.</p>
+        </section>
+
+        <div class="form-container">
+            <h2 style="color: #0d2f5f; margin-bottom: 20px;">Send New Notification</h2>
+            <form action="/send-notification" method="POST">
+                <div class="form-group">
+                    <label>Notification Type</label>
+                    <select name="type">
+                        <option value="announcement">Announcement (General Info)</option>
+                        <option value="alert">Alert (Urgent Updates/Events)</option>
+                        <option value="push">Push Notification (App Alert)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" placeholder="e.g., New Event Scheduled" required>
+                </div>
+                <div class="form-group">
+                    <label>Message Content</label>
+                    <textarea rows="4" placeholder="Type your message here..." required></textarea>
+                </div>
+                <button type="submit" class="logout-btn" style="width: 100%; border: none; cursor: pointer;">Broadcast Now</button>
+            </form>
+        </div>
+
+        <div class="notif-history">
+            <h2 style="color: #0d2f5f; margin-bottom: 15px;">Sent History</h2>
+            <div class="notif-item">
+                <div>
+                    <strong>Breakfast Gathering Reminder</strong><br>
+                    <small>Sent to all members | July 12, 2026</small>
+                </div>
+                <span class="type-badge announcement">Announcement</span>
+            </div>
+            <div class="notif-item">
+                <div>
+                    <strong>Urgent: Leadership Venue Change</strong><br>
+                    <small>Sent to all members | July 10, 2026</small>
+                </div>
+                <span class="type-badge alert">Alert</span>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("hide");
+    }
+</script>
+</body>
+</html>

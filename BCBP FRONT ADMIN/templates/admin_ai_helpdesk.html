@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCBP Admin | AI Help Desk</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .helpdesk-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1.8fr;
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1100px) { .helpdesk-grid { grid-template-columns: 1fr; } }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 22px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Chat Logs Styling */
+        .chat-logs-container {
+            height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(245, 248, 252, 0.5);
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .chat-entry {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+        .user-msg { background: #e0f2fe; border-left: 4px solid #0369a1; }
+        .ai-msg { background: #f1f5f9; border-left: 4px solid #64748b; margin-left: 20px; }
+
+        /* Insight Cards */
+        .insight-pill {
+            background: linear-gradient(135deg, #d4af37, #f3db8f);
+            color: #0d2f5f;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            background: #0d2f5f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #d4af37; color: #0d2f5f; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="left-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Logo">
+            <div>
+                <h2>BCBP ADMIN</h2>
+                <span>AI Help Desk & Tickets</span>
+            </div>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="/login" class="logout-btn">Logout</a>
+    </div>
+</header>
+
+<div class="dashboard-wrapper">
+    <aside class="sidebar" id="sidebar">
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='bcbp.png') }}" alt="Admin">
+            <h3>Admin Panel</h3>
+            <p>AI Support Manager</p>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/members">Members</a>
+            <a href="/admin/events">Events</a>
+            <a href="/admin/attendance">Attendance</a>
+            <a href="/admin/learning-materials">Learning Materials</a>
+            <a href="/admin/reports">Reports</a>
+            <a href="/admin/notifications">Notifications</a>
+            <a href="/admin/ai-helpdesk" class="active">AI Help Desk</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <section class="welcome-banner">
+            <h1>AI Help Desk Intelligence</h1>
+            <p>Monitor chatbot interactions, resolve user inquiries, and act on AI-generated suggestions.</p>
+        </section>
+
+        <div class="helpdesk-grid">
+            
+            <div class="glass-card">
+                <h3 style="color: #0d2f5f; margin-bottom: 15px;"><i class="fa-solid fa-comments"></i> Live Chatbot Logs</h3>
+                <div class="chat-logs-container">
+                    <div class="chat-entry user-msg">
+                        <strong>Member (Juan):</strong> Paano po mag-register sa Grand Breakfast?
+                    </div>
+                    <div class="chat-entry ai-msg">
+                        <strong>AI Assistant:</strong> Maaari po kayong mag-register sa 'Events' tab ng inyong dashboard. I-click ang 'Join Event'.
+                    </div>
+                    <div class="chat-entry user-msg">
+                        <strong>Member (Maria):</strong> Hindi ko po ma-access ang learning module sa Ethics.
+                    </div>
+                    <div class="chat-entry ai-msg">
+                        <strong>AI Assistant:</strong> Pasensya na po. I-tatag ko po ito bilang isang Support Ticket para matulungan kayo ng Admin.
+                    </div>
+                </div>
+                <small style="color: #666;">Status: AI is actively monitoring 12 concurrent chats.</small>
+            </div>
+
+            <div class="right-column">
+                
+                <div class="glass-card" style="border-top: 4px solid #d4af37;">
+                    <h3 style="color: #0d2f5f; margin-bottom: 15px;"><i class="fa-solid fa-lightbulb"></i> AI Insights</h3>
+                    <div class="insight-pill">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Frequent Issue: 45% of users are asking about PDF download errors.
+                        <br>
+                        <button class="action-btn">Suggested Action: Update Learning Module PDF links</button>
+                    </div>
+                    <div class="insight-pill" style="background: linear-gradient(135deg, #0d2f5f, #1e4b8f); color: white;">
+                        <i class="fa-solid fa-chart-line"></i> Trend: High interest in 'Leadership' modules this week.
+                        <br>
+                        <button class="action-btn" style="background: #d4af37; color: #0d2f5f;">Suggested Action: Schedule a new Leadership Webinar</button>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h3 style="color: #0d2f5f; margin-bottom: 15px;"><i class="fa-solid fa-ticket"></i> Open Support Tickets</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Inquiry</th>
+                                <th>Priority</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Maria S.</td>
+                                <td>Access Issue</td>
+                                <td><span style="color: #e74c3c; font-weight: bold;">High</span></td>
+                                <td><button class="action-btn">Resolve</button></td>
+                            </tr>
+                            <tr>
+                                <td>Pedro P.</td>
+                                <td>Event Info</td>
+                                <td><span style="color: #f39c12; font-weight: bold;">Medium</span></td>
+                                <td><button class="action-btn">Resolve</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        © 2026 Brotherhood of Christian Businessmen and Professionals
+    </div>
+</footer>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("hide");
+    }
+</script>
+</body>
+</html>
